@@ -20,15 +20,16 @@ public class AdjacencyList implements Representation {
     private Map<Node, Collection<Edge>> adjacencyList;
 
     public AdjacencyList(File file) {
-        List<Integer> graph = Lists.newArrayList();
         List<Edge> edges = Lists.newArrayList();
         HashMap nodes = new HashMap();
+
         try (Stream<String> stream = Files.lines(file.toPath())) {
             stream.forEach(line -> {
                 for (String token: line.split(" ")) {
                     if(token.contains(":")) {
                         String[] currentLine = token.split(":");
-                        nodes.put("node" + token, Integer.parseInt(currentLine[0]));
+                        nodes.put("node-" + Integer.parseInt(currentLine[0]), Integer.parseInt(currentLine[0]));
+                        nodes.put("node-" + Integer.parseInt(currentLine[1]), Integer.parseInt(currentLine[1]));
 
                         Node fromNode = new Node(Integer.parseInt(currentLine[0]));
                         Node toNodeEdge = new Node(Integer.parseInt(currentLine[1]));
@@ -37,8 +38,6 @@ public class AdjacencyList implements Representation {
                         Edge edge = new Edge(fromNode, toNodeEdge, edgeValue);
                         edges.add(edge);
                     }
-
-                    //graph.add(Integer.parseInt(token));
                 }
             });
         } catch (IOException e) {
@@ -49,16 +48,12 @@ public class AdjacencyList implements Representation {
             System.out.println(edge);
         }
 
-        System.out.println("/n /n HashMap values");
-        // Get a set of the entries
+        System.out.println("\n HashMap values");
         Set set = nodes.entrySet();
-        // Get an iterator
         Iterator i = set.iterator();
-        // Display elements
         while(i.hasNext()) {
             Map.Entry me = (Map.Entry)i.next();
-            System.out.print(me.getKey() + "--");
-            System.out.println(me.getValue());
+            System.out.print(me.getKey() + "- " + me.getValue());
         }
 
     }
