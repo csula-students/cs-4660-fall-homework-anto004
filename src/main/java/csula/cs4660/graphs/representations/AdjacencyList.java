@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  * TODO: please implement the method body
  */
 public class AdjacencyList implements Representation {
-    private Multimap<Node, Collection<Edge>> adjacencyList = ArrayListMultimap.create();
+    private Multimap<Node, Edge> adjacencyList = ArrayListMultimap.create();
 
     public AdjacencyList(File file) {
         List<Edge> edges = Lists.newArrayList();
@@ -49,29 +49,17 @@ public class AdjacencyList implements Representation {
         }
         List<Node> nodes = new ArrayList<Node>(nodeMap.values());
 
-        for(Edge edge: edges){
-            System.out.println(edge);
-        }
-        System.out.println("Nodes");
-        for(Node node: nodes){
-            System.out.println(node);
-        }
-
-
         for(Node node: nodes){
             for(Edge edge: edges) {
                 if (node.getData() == edge.getFrom().getData()) {
-                    List<Edge> edgeList = Lists.newArrayList();
-                    edgeList.add(edge);
-                    adjacencyList.put(node, edgeList);
+                    adjacencyList.put(node, edge);
                 }
             }
         }
 
         for(Node node: adjacencyList.keySet()){
-            Collection<Collection<Edge>> edge = adjacencyList.get(node);
+            Collection<Edge> edge = adjacencyList.get(node);
             System.out.println(node+ " : " + edge);
-
         }
     }
 
@@ -81,12 +69,18 @@ public class AdjacencyList implements Representation {
 
     @Override
     public boolean adjacent(Node x, Node y) {
-
+        Collection<Edge> edges = adjacencyList.get(x);
+        for(Edge edge: edges){
+            if (edge.getTo().getData() == y.getData()){
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public List<Node> neighbors(Node x) {
+
         return null;
     }
 
