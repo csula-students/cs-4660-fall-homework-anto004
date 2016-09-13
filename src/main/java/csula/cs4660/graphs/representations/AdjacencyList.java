@@ -90,21 +90,33 @@ public class AdjacencyList implements Representation {
 
     @Override
     public boolean addNode(Node x) {
-        return false;
+        if (adjacencyList.containsKey(x))
+            return false;
+        else{
+            adjacencyList.put(x, new Edge());
+        }
+        return true;
     }
 
     @Override
     public boolean removeNode(Node x) {
+
         return false;
     }
 
     @Override
     public boolean addEdge(Edge x) {
-        return false;
+        if(adjacencyList.containsValue(x))
+            return false;
+        else{
+            adjacencyList.put(x.getFrom(), x);
+        }
+        return true;
     }
 
     @Override
     public boolean removeEdge(Edge x) {
+
         return false;
     }
 
