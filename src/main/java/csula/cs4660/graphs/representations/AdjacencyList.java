@@ -80,8 +80,12 @@ public class AdjacencyList implements Representation {
 
     @Override
     public List<Node> neighbors(Node x) {
-
-        return null;
+        Collection<Edge> edges = adjacencyList.get(x);
+        List<Node> nodes = Lists.newArrayList();
+        for(Edge edge: edges){
+            nodes.add(edge.getTo());
+        }
+        return nodes;
     }
 
     @Override
