@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Stream;
+import java.util.Map.*;
 
 /**
  * Adjacency list is probably the most common implementation to store the unknown
@@ -100,7 +101,25 @@ public class AdjacencyList implements Representation {
 
     @Override
     public boolean removeNode(Node x) {
-
+        if(adjacencyList.containsKey(x)){
+            adjacencyList.removeAll(x);
+            Collection<Map.Entry<Node, Edge>> keySet = adjacencyList.entries();
+            Iterator<Map.Entry<Node, Edge>> iteratorNode = keySet.iterator();
+            while(iteratorNode.hasNext()) {
+                Entry entry = iteratorNode.next();
+                Edge edge = (Edge)entry.getValue();
+                if(edge.getTo().getData() == x.getData()) {
+                    System.out.println(entry.getValue());
+                    iteratorNode.remove();
+                }
+            }
+            return true;
+        }
+        for(Node node: adjacencyList.keySet()){
+            Collection<Edge> edge = adjacencyList.get(node);
+            System.out.println("Nodes and Edges after removing Node-"+ x);
+            System.out.println(node+ " : " + edge);
+        }
         return false;
     }
 

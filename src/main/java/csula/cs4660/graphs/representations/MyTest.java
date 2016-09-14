@@ -13,7 +13,8 @@ public class MyTest {
 
         AdjacencyList al = new AdjacencyList(file1);
 
-        System.out.println(al.addEdge(new Edge(new Node(1), new Node(4),1)));
+        //System.out.println(al.addEdge(new Edge(new Node(1), new Node(4),1)));
+        System.out.println(al.removeNode(new Node(6)));
 
     }
 }
