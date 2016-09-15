@@ -105,23 +105,49 @@ public class AdjacencyMatrix implements Representation {
         Node [] newNodes = Arrays.copyOf(nodes, nodes.length+1);
         newNodes[nodes.length - 1]= x;
         nodes = newNodes;
-        System.out.println("New Node:"+nodes[nodes.length-2]);
+        System.out.println("Addedd New Node:"+nodes[nodes.length-2]);
         return true;
     }
 
     @Override
     public boolean removeNode(Node x) {
-        return false;
+        int row = (int)x.getData();
+        if(!(Arrays.asList(nodes).contains(x)))
+            return false;
+
+        List<Node> nodeList = new ArrayList<>(Arrays.asList(nodes));
+        nodeList.remove(x);
+        nodes = nodeList.toArray(nodes);
+        // array is no longer sorted
+        for(int column=0; column< adjacencyMatrix.length; column ++){
+            adjacencyMatrix[row][column] = 0;
+            adjacencyMatrix[column][row] = 0;
+        }
+        System.out.println("Removed Node:"+x);
+        return true;
     }
 
     @Override
     public boolean addEdge(Edge x) {
-        return false;
+        int row = (int)x.getFrom().getData();
+        int column = (int)x.getTo().getData();
+        if(adjacencyMatrix[row][column] == 1)
+            return false;
+        adjacencyMatrix[row][column] = x.getValue();
+        System.out.println("Added Edge: Node"+row+" and Node"+ column+"- " +adjacencyMatrix[row][column]);
+        return true;
     }
 
     @Override
     public boolean removeEdge(Edge x) {
-        return false;
+        int row = (int)x.getFrom().getData();
+        int column = (int)x.getTo().getData();
+        if(adjacencyMatrix[row][column] == 0)
+            return false;
+        adjacencyMatrix[row][column] = 0;
+        System.out.println("Removed Edge:"+x);
+        return true;
+
     }
 
     @Override
