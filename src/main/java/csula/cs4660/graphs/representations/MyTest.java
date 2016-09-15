@@ -18,7 +18,7 @@ public class MyTest {
        // System.out.println(al.removeEdge(new Edge(new Node(6), new Node(5), 1)));
 
         AdjacencyMatrix am = new AdjacencyMatrix(file1);
-
-
+//        System.out.println(am.neighbors(new Node(1)));
+        System.out.println(am.addNode(new Node(1)));
     }
 }

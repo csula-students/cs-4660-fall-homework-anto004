@@ -1,5 +1,6 @@
 package csula.cs4660.graphs.representations;
 
+import com.google.common.collect.Lists;
 import csula.cs4660.graphs.Edge;
 import csula.cs4660.graphs.Node;
 
@@ -76,18 +77,36 @@ public class AdjacencyMatrix implements Representation {
 
     @Override
     public boolean adjacent(Node x, Node y) {
-        
+        int row = (int) x.getData();
+        int column = (int) y.getData();
+        if(adjacencyMatrix[row][column] == 1)
+            return true;
         return false;
     }
 
     @Override
     public List<Node> neighbors(Node x) {
-        return null;
+        int row = (int) x.getData();
+        List<Node> nodes = Lists.newArrayList();
+        for(int i=0; i < adjacencyMatrix.length; i++){
+            if(adjacencyMatrix[row][i] == 1){
+                nodes.add(new Node(i));
+            }
+        }
+        return nodes;
     }
 
     @Override
     public boolean addNode(Node x) {
-        return false;
+        for(int i=0; i<nodes.length; i++){
+            if(nodes[i].getData() ==  x.getData())
+                return false;
+        }
+        Node [] newNodes = Arrays.copyOf(nodes, nodes.length+1);
+        newNodes[nodes.length - 1]= x;
+        nodes = newNodes;
+        System.out.println("New Node:"+nodes[nodes.length-2]);
+        return true;
     }
 
     @Override
