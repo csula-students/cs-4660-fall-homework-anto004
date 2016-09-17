@@ -47,6 +47,7 @@ public class FileRead {
      * lineNumber starts with 0 (programming friendly!)
      */
     public int mean(int lineNumber) {
+
         return sum(lineNumber) / numbers[lineNumber].length;
     }
 
@@ -71,7 +72,7 @@ public class FileRead {
         for (int i : numbers[lineNumber]) {
             sum += i;
         }
-        return 0;
+        return sum;
     }
 
 
