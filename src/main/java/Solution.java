@@ -35,7 +35,7 @@ public class Solution {
         }
 
         BFS(tiles, tiles[startRow][startCol])
-            .forEach(System.out::println);
+                .forEach(System.out::println);
     }
 
     /**
@@ -46,6 +46,10 @@ public class Solution {
         Map<Tile, Tile> parents = new HashMap<>();
         Tile endTile = new Tile();
 
+        // open set
+        Queue<Tile> frontier = new LinkedList<>();
+        // closed set
+        Collection<Tile> exploredSet = new LinkedList<>();
 
         exploredSet.add(startTile);
         parents.put(startTile, null);
@@ -92,9 +96,9 @@ public class Solution {
     }
 
     public static List<Tile> findPossibleNextMoves(
-        Tile[][] tiles,
-        int row,
-        int col
+            Tile[][] tiles,
+            int row,
+            int col
     ) {
         List<Tile> result = new ArrayList<>();
         for (MOVE move: MOVE.values()) {
