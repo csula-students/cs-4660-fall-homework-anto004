@@ -21,8 +21,9 @@ public class BFS implements SearchStrategy {
        // List<Node> frontier = graph.neighbors(source);
         List<Node> exploredSet = Lists.newArrayList();
         exploredSet.add(source);
-        //List<Node> endTile = Lists.newArrayList();
-       // List<Edge> result = Lists.newArrayList();
+
+        HashMap<String, Node> endTile = new HashMap<>();
+        List<Edge> result = Lists.newArrayList();
 
         Queue queue = new LinkedList<Node>();
         queue.add(source);
@@ -36,18 +37,21 @@ public class BFS implements SearchStrategy {
             for(Node node: graph.neighbors(u)){
                 parent.put(u, node);
                 if(!exploredSet.contains(node)){
-//                    if(u.equals(dest)){
-//                        endTile.add(u);
-//                    }
+                    if(node.equals(dest)){
+                        endTile.put("Goal", node);
+                    }
                     queue.add(node);
                     exploredSet.add(node);
                 }
             }
         }
+        System.out.println("The Destination Node is:"+endTile.get("Goal"));
+       // while(parent.get() != null))
 
         for(Node node: parent.keySet()){
             System.out.println("Parent of "+ node + "is"+ parent.get(node));
         }
+        while(parent.get(endTile.get("Goal") != null))
 
 
         return null;

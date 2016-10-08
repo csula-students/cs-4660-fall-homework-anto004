@@ -34,7 +34,8 @@ public class AdjacencyMatrix implements Representation {
                         String[] currentLine = token.split(":");
                         Integer row = Integer.parseInt(currentLine[0]);
                         Integer column = Integer.parseInt(currentLine[1]);
-                        adjacencyMatrix[row][column] = 1;
+                        Integer value = Integer.parseInt(currentLine[2]);
+                        adjacencyMatrix[row][column] = value;
                         nodeMap.put("node-"+ row, new Node(row));
                         nodeMap.put("node-"+ column, new Node(column));
 
@@ -152,7 +153,9 @@ public class AdjacencyMatrix implements Representation {
 
     @Override
     public int distance(Node from, Node to) {
-        return 1;
+        int row = (int)from.getData();
+        int col = (int )to.getData();
+        return adjacencyMatrix[row][col];
     }
 
     @Override
