@@ -1,8 +1,6 @@
 package csula.cs4660.graphs.searches;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import csula.cs4660.graphs.Edge;
 import csula.cs4660.graphs.Graph;
 import csula.cs4660.graphs.Node;
@@ -16,44 +14,58 @@ public class BFS implements SearchStrategy {
     @Override
     public List<Edge> search(Graph graph, Node source, Node dest) {
         System.out.println("BFS Search:");
-        //HashMap<Parent, Child>
-        Multimap<Node, Node> parent = ArrayListMultimap.create();
-       // List<Node> frontier = graph.neighbors(source);
-        List<Node> exploredSet = Lists.newArrayList();
-        exploredSet.add(source);
-
-        HashMap<String, Node> endTile = new HashMap<>();
-        List<Edge> result = Lists.newArrayList();
 
         Queue queue = new LinkedList<Node>();
+        //HashMap(Child, Parent)
+        HashMap<Node,Node> parent = new HashMap<>();
+        List<Node> exploredSet = Lists.newArrayList();
+        Node endTile = new Node(dest.getData());
+        List<Edge> result = new ArrayList<>();
+
         queue.add(source);
+        exploredSet.add(source);
 
         while(!queue.isEmpty()){
             Node u = (Node)queue.poll();
-            System.out.println("Round begins");
-            for(Node node: exploredSet){
-                System.out.println("Explored Set contains this node: "+node);
-            }
             for(Node node: graph.neighbors(u)){
-                parent.put(u, node);
                 if(!exploredSet.contains(node)){
+                    parent.put(node, u);
                     if(node.equals(dest)){
-                        endTile.put("Goal", node);
+                        endTile = new Node(node.getData());
+                        System.out.println("Found Goal");
                     }
                     queue.add(node);
                     exploredSet.add(node);
                 }
             }
         }
-        System.out.println("The Destination Node is:"+endTile.get("Goal"));
-       // while(parent.get() != null))
 
-        for(Node node: parent.keySet()){
-            System.out.println("Parent of "+ node + "is"+ parent.get(node));
+        for(Node node: exploredSet){
+            System.out.println("Explored Node-"+node);
         }
-        while(parent.get(endTile.get("Goal") != null))
+        for(Node node: parent.keySet()){
+            System.out.println("Parent of "+ node + "is:"+ parent.get(node));
+        }
 
+       while(parent.get(endTile) != null){
+           Node fromNode = new Node(parent.get(endTile).getData());
+           Node toNode = new Node(endTile.getData());
+           result.add(new Edge(fromNode, toNode, graph.distance(fromNode, toNode)));
+           endTile = new Node(fromNode.getData());
+       }
 
-        return null;
+       for(Edge edge: result){
+           System.out.println("Result list:"+ edge);
+       }
+
+       List<Edge> reverseList = Lists.newArrayList();
+       for(ListIterator<Edge> iterator = result.listIterator(result.size()); iterator.hasPrevious();){
+           reverseList.add(iterator.previous());
+       }
+       for(Edge edge: reverseList){
+           System.out.println("Reversed list"+edge);
+       }
+
+       return reverseList;
     }
 }
