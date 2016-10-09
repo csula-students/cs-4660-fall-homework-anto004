@@ -90,7 +90,7 @@ public class AdjacencyMatrix implements Representation {
         int row = (int) x.getData();
         List<Node> nodes = Lists.newArrayList();
         for(int i=0; i < adjacencyMatrix.length; i++){
-            if(adjacencyMatrix[row][i] == 1){
+            if(adjacencyMatrix[row][i] != 0){
                 nodes.add(new Node(i));
             }
         }
