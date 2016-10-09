@@ -11,6 +11,7 @@ import java.util.*;
  * Breadth first search
  */
 public class BFS implements SearchStrategy {
+    Node endTile;
     @Override
     public List<Edge> search(Graph graph, Node source, Node dest) {
         System.out.println("BFS Search:");
@@ -19,7 +20,7 @@ public class BFS implements SearchStrategy {
         //HashMap(Child, Parent)
         HashMap<Node,Node> parent = new HashMap<>();
         List<Node> exploredSet = Lists.newArrayList();
-        Node endTile = new Node(dest.getData());
+       // Node endTile = new Node(dest.getData());
         List<Edge> result = new ArrayList<>();
 
         queue.add(source);
@@ -32,7 +33,7 @@ public class BFS implements SearchStrategy {
                     parent.put(node, u);
                     if(node.equals(dest)){
                         endTile = new Node(node.getData());
-                        System.out.println("Found Goal");
+                        //System.out.println("Found Goal");
                     }
                     queue.add(node);
                     exploredSet.add(node);
@@ -55,7 +56,7 @@ public class BFS implements SearchStrategy {
        }
 
        for(Edge edge: result){
-           System.out.println("Result list:"+ edge);
+           System.out.println("BFS Result list:"+ edge);
        }
 
        List<Edge> reverseList = Lists.newArrayList();
