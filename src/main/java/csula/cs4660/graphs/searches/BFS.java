@@ -19,8 +19,8 @@ public class BFS implements SearchStrategy {
         Queue queue = new LinkedList<Node>();
         //HashMap(Child, Parent)
         HashMap<Node,Node> parent = new HashMap<>();
+        //used explored set instead of initializing to MAX value
         List<Node> exploredSet = Lists.newArrayList();
-       // Node endTile = new Node(dest.getData());
         List<Edge> result = new ArrayList<>();
 
         queue.add(source);
