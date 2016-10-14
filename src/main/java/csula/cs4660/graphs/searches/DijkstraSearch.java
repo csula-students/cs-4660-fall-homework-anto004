@@ -36,7 +36,7 @@ public class DijkstraSearch implements SearchStrategy {
                     node.setDistance(Integer.MAX_VALUE);
                 }
                 else{
-                    node = exploredMap.get(node);
+                    node = exploredMap.get(node); // A new node object is constructed so you need the old value.
                 }
                 int alt = u.getDistance() + graph.distance(u, node);
                 System.out.println("value of alt:" +alt+": value of "+node+" :"+node.getDistance());
@@ -46,13 +46,15 @@ public class DijkstraSearch implements SearchStrategy {
                     parent.put(node, u);
                     queue.add(node);
                 }
+                // There are many goals, you want the goal with the lowest distance
                 if((node.equals(dest)) && (node.getDistance() < endTile.getDistance())){
                     endTile = new Node(node.getData());
                     endTile.setDistance(node.getDistance());
                     System.out.println("Found Goal"+endTile+"-Distance:"+endTile.getDistance());
                 }
-                    //set doesn't add new duplicates
-                    exploredMap.put(node,node);
+                //set doesn't add new duplicates
+                //you want the duplicates with the least distance
+                exploredMap.put(node,node);
 
             }
         }
