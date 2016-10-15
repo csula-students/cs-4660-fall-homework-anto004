@@ -93,22 +93,6 @@ public class Parser {
 //        }
         return edges;
     }
-    private static void gridMatrixDebug(Tile[][] gridMatrix) {
-        System.out.print("  ");
-
-        for(int q=0; q< gridMatrix.length; q++)
-            System.out.print((q) % 10  + " ");
-        System.out.println();
-        for (int row = 0; row < gridMatrix.length; row++) {
-            System.out.print((row) + " ");
-            for (int col = 0; col < gridMatrix[row].length; col++) {
-//                if(gridMatrix[row][col] != null)
-//                    System.out.print(gridMatrix[row][col].getType()+ " ");
-                System.out.print(gridMatrix[row][col]);
-            }
-            System.out.println();
-        }
-    }
 
     public static Tile [][] readLinesToMatrix (List<String> lines){
         int rowSize = lines.size();
@@ -151,6 +135,22 @@ public class Parser {
             System.out.println();
         }
 
+    }
+    private static void gridMatrixDebug(Tile[][] gridMatrix) {
+        System.out.print("  ");
+
+        for(int q=0; q< gridMatrix.length; q++)
+            System.out.print((q) % 10  + " ");
+        System.out.println();
+        for (int row = 0; row < gridMatrix.length; row++) {
+            System.out.print((row) + " ");
+            for (int col = 0; col < gridMatrix[row].length; col++) {
+//                if(gridMatrix[row][col] != null)
+//                    System.out.print(gridMatrix[row][col].getType()+ " ");
+                System.out.print(gridMatrix[row][col]);
+            }
+            System.out.println();
+        }
     }
 
     public static String converEdgesToAction(Collection<Edge> edges) {
