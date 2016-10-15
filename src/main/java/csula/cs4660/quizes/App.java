@@ -12,5 +12,11 @@ public class App {
         System.out.println(initialState);
         // to get an edge between state to its neighbor, you can call stateTransition
         System.out.println(Client.stateTransition(initialState.getId(), initialState.getNeighbors()[0].getId()));
+        for(State state: initialState.getNeighbors())
+            System.out.println("neighbor:" +state + "children are"+ state.getNeighbors());
+
+        System.out.println("BFS");
+
+
     }
 }
