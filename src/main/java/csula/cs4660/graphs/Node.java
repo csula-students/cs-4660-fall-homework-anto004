@@ -9,12 +9,24 @@ package csula.cs4660.graphs;
 public class Node<T> {
     private final T data;
 
+    private int distance;
+
+
     public Node(T data) {
         this.data = data;
     }
 
+
     public T getData() {
         return data;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance){
+        this.distance = distance;
     }
 
     @Override
