@@ -6,6 +6,7 @@ import csula.cs4660.graphs.Node;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Stream;
@@ -17,34 +18,75 @@ import java.util.Map.*;
  * TODO: please fill the method body of this class
  */
 public class AdjacencyMatrix implements Representation {
-    private Node[] nodes = new Node[11];
-    private int[][] adjacencyMatrix = new int[11][11];
+    private Node[] nodes;
+    private int[][] adjacencyMatrix;
     private HashMap<String, Node> nodeMap = new HashMap<>();
 
     public AdjacencyMatrix(File file) {
-        for(int i=0; i < 11; i++)
-            for(int j=0; j < 11; j++) {
-                adjacencyMatrix[i][j] = 0;
+//        for(int i=0; i < 11; i++)
+//            for(int j=0; j < 11; j++) {
+//                adjacencyMatrix[i][j] = 0;
+//            }
+//
+//
+//        try (Stream<String> stream = Files.lines(file.toPath())) {
+//            stream.forEach(line -> {
+//                for (String token: line.split(" ")) {
+//                    if(token.contains(":")) {
+//                        String[] currentLine = token.split(":");
+//                        Integer row = Integer.parseInt(currentLine[0]);
+//                        Integer column = Integer.parseInt(currentLine[1]);
+//                        Integer value = Integer.parseInt(currentLine[2]);
+//                        adjacencyMatrix[row][column] = value;
+//                        nodeMap.put("node-"+ row, new Node(row));
+//                        nodeMap.put("node-"+ column, new Node(column));
+//
+//                    }
+//                }
+//            });
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        try {
+            List<String> lines = Files.readAllLines(file.toPath(),Charset.defaultCharset());
+            int size = Integer.parseInt(lines.get(0));
+            System.out.println("size of lines"+size);
+            nodes = new Node[size];
+            adjacencyMatrix= new int[size][size];
+            for(int i=0; i < adjacencyMatrix.length; i++)
+                for(int j=0; j < adjacencyMatrix.length; j++) {
+                    adjacencyMatrix[i][j] = 0;
             }
 
-        try (Stream<String> stream = Files.lines(file.toPath())) {
-            stream.forEach(line -> {
-                for (String token: line.split(" ")) {
-                    if(token.contains(":")) {
-                        String[] currentLine = token.split(":");
-                        Integer row = Integer.parseInt(currentLine[0]);
-                        Integer column = Integer.parseInt(currentLine[1]);
-                        Integer value = Integer.parseInt(currentLine[2]);
-                        adjacencyMatrix[row][column] = value;
-                        nodeMap.put("node-"+ row, new Node(row));
-                        nodeMap.put("node-"+ column, new Node(column));
-
-                    }
+            System.out.print("  ");
+            for(int q=0; q<adjacencyMatrix.length; q++)
+                System.out.print(q+ " ");
+            System.out.println();
+            for(int i=0; i< adjacencyMatrix.length; i++) {
+                System.out.print(i + " ");
+                for (int j = 0; j < adjacencyMatrix.length; j++) {
+                    System.out.print(adjacencyMatrix[i][j] + " ");
                 }
-            });
+                System.out.println();
+            }
+
+            for(int i=0; i < lines.size(); i++) {
+                if(lines.get(i).contains(":")) {
+                    String[] currentLine = lines.get(i).split(":");
+                    Integer row = Integer.parseInt(currentLine[0]);
+                    Integer column = Integer.parseInt(currentLine[1]);
+                    Integer value = Integer.parseInt(currentLine[2]);
+                    adjacencyMatrix[row][column] = value;
+                    nodeMap.put("node-" + row, new Node(row));
+                    nodeMap.put("node-" + column, new Node(column));
+                }
+
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         List<Node> nodeList = new ArrayList<>(nodeMap.values());
         for(int i=0; i < nodeList.size(); i++){
@@ -99,8 +141,9 @@ public class AdjacencyMatrix implements Representation {
 
     @Override
     public boolean addNode(Node x) {
+        System.out.println("NODES.LENGTH"+nodes.length);
         for(int i=0; i<nodes.length; i++){
-            if(nodes[i].getData() ==  x.getData())
+            if(nodes[i].equals(x))
                 return false;
         }
         Node [] newNodes = Arrays.copyOf(nodes, nodes.length+1);

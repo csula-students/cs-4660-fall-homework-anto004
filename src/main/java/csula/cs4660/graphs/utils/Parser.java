@@ -63,22 +63,16 @@ public class Parser {
 
     private static List<Edge> creatingTileEdges(Tile[][] gridMatrix, Tile tile) {
         List<Edge> edges = Lists.newArrayList();
-        //checking for left wall
-        if(((tile.getX()-1) >=0) && (gridMatrix[tile.getY()][tile.getX()-1] != null)){
-            Node fromNode = new Node<Tile>(tile);
-            Node toNode = new Node<Tile>(gridMatrix[tile.getY()][tile.getX()-1]);
-            edges.add(new Edge(fromNode, toNode, 1 ));
-        }
         // checking for right wall
-        if(((tile.getX()+1) < gridMatrix[tile.getY()].length) && (gridMatrix[tile.getY()][tile.getX()+1] != null)){
+        if(((tile.getX()+1) < gridMatrix[0].length) && (gridMatrix[tile.getY()][tile.getX()+1] != null)){
             Node fromNode = new Node<Tile>(tile);
             Node toNode = new Node<Tile>(gridMatrix[tile.getY()][tile.getX()+1]);
             edges.add(new Edge(fromNode, toNode, 1 ));
         }
-        //checking for up wall
-        if(((tile.getY()- 1) >=0) && (gridMatrix[tile.getY()-1][tile.getX()] != null)){
+        //checking for left wall
+        if(((tile.getX()-1) >=0) && (gridMatrix[tile.getY()][tile.getX()-1] != null)){
             Node fromNode = new Node<Tile>(tile);
-            Node toNode = new Node<Tile>(gridMatrix[tile.getY()-1][tile.getX()]);
+            Node toNode = new Node<Tile>(gridMatrix[tile.getY()][tile.getX()-1]);
             edges.add(new Edge(fromNode, toNode, 1 ));
         }
         //checking for bottom wall
@@ -87,6 +81,13 @@ public class Parser {
             Node toNode = new Node<Tile>(gridMatrix[tile.getY()+1][tile.getX()]);
             edges.add(new Edge(fromNode, toNode, 1 ));
         }
+        //checking for up wall
+        if(((tile.getY()- 1) >=0) && (gridMatrix[tile.getY()-1][tile.getX()] != null)){
+            Node fromNode = new Node<Tile>(tile);
+            Node toNode = new Node<Tile>(gridMatrix[tile.getY()-1][tile.getX()]);
+            edges.add(new Edge(fromNode, toNode, 1 ));
+        }
+
 //        System.out.println("Neighbor of"+tile.getX()+" "+tile.getY());
 //        for (Edge edge: edges){
 //            System.out.println("edge: "+edge);

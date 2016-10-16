@@ -8,9 +8,6 @@ import csula.cs4660.graphs.Node;
 
 import java.util.*;
 
-/**
- * Perform A* search
- */
 public class AstarSearch implements SearchStrategy {
     Node endTile = new Node(Integer.MAX_VALUE);
     @Override
@@ -25,7 +22,7 @@ public class AstarSearch implements SearchStrategy {
         Map<Node, Integer> fscore = new HashMap<>();
         fscore.put(source, heuristicCost(source, dist));
 
-        Queue<Node> frontier = new PriorityQueue<Node>((node1, node2)->{
+        Queue<Node<Tile>> frontier = new PriorityQueue<Node<Tile>>((node1, node2)->{
             int n1Score = fscore.get(node1), n2Score = fscore.get(node2);
 
             if (n1Score < n2Score) {
@@ -53,13 +50,14 @@ public class AstarSearch implements SearchStrategy {
             } else return 7;
         });
 
-        source.setDistance(0);
+        //source.setDistance(0);
         frontier.add(source);
 
         while (!frontier.isEmpty()) {
             // pop with the lowest fscore
             Node u = frontier.poll();
-            System.out.println("frontier.poll():" + u);
+            Tile uTile = (Tile)u.getData();
+            System.out.println("frontier.poll():" + uTile.getX() +" "+uTile.getY());
             if (u.equals(dist)) {
                 System.out.println("found goal");
 
@@ -82,44 +80,40 @@ public class AstarSearch implements SearchStrategy {
                 }
 //                else
 //                    node = exploredMap.get(node);
-                if (gscore.get(node) == null)
-                    node.setDistance(Integer.MAX_VALUE);
-                else {
-                    node.setDistance(gscore.get(node));
-                    System.out.println(node + "Setting Distance to " + gscore.get(node));
-                }
-                int tempGScore = gscore.get(u) + graph.distance(u, node);
+//                if (gscore.get(node) == null)
+//                    node.setDistance(Integer.MAX_VALUE);
+//                else {
+//                    node.setDistance(gscore.get(node));
+//                    System.out.println(node + "Setting Distance to " + gscore.get(node));
+//                }
+                int tempGScore = gscore.get(u) + 1;
                 System.out.println("tempGScore=" + tempGScore);
 
-                if (tempGScore < node.getDistance()) {
-                    node.setDistance(tempGScore);
+                if (tempGScore < gscore.get(node)) {
+                    gscore.put(node, tempGScore);
                     parents.put(node, u);
-                    System.out.println(node + "is being set distance" + node.getDistance());
+                    fscore.put(node, gscore.get(node) + heuristicCost(node, dist));
+                    System.out.println(node + "gscore is" + gscore.get(tempGScore));
                 }
 
                 if (!frontier.contains(node)) {
                     frontier.add(node);
-                } else if (tempGScore >= gscore.get(node)) {
-                    continue;
                 }
-                gscore.put(node, tempGScore);
-                //fscore.put(node, gscore.get(node) + heuristicCost(node, dist));
+
             }
         }
 
         return null;
     }
 
-    public List<Edge> constructPath(Graph graph, Node node, Map<Node, Node> parents) {
-        Node endTile = new Node(node.getData());
+    public List<Edge> constructPath(Graph graph, Node endTile, Map<Node,Node> parents) {
         List<Edge> result = Lists.newArrayList();
         List<Edge> reverseList = Lists.newArrayList();
 
         while (parents.get(endTile) != null) {
-            Node fromNode = new Node(parents.get(endTile).getData());
-            Node toNode = new Node(endTile.getData());
-            result.add(new Edge(fromNode, toNode, graph.distance(fromNode, toNode)));
-            endTile = new Node(parents.get(endTile).getData());
+            Node fromNode = new Node(parents.get(endTile));
+            result.add(new Edge(fromNode, endTile, 1));
+            endTile = new Node(parents.get(endTile));
         }
         for (ListIterator<Edge> iterator = result.listIterator(result.size()); iterator.hasPrevious(); ) {
             reverseList.add(iterator.previous());
