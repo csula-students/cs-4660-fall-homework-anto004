@@ -86,6 +86,7 @@ public class AdjacencyList implements Representation {
         List<Node> nodes = Lists.newArrayList();
         for(Edge edge: edges){
             nodes.add(edge.getTo());
+            System.out.println("Adjacency List Representation: "+edge);
         }
         return nodes;
     }

@@ -21,13 +21,13 @@ public class MyGridTest {
         graph = Parser.readRectangularGridFile(
                 Representation.STRATEGY.ADJACENCY_LIST,
                 file1);
-
-        String str = Parser.converEdgesToAction(graph.search(
-                        new AstarSearch(),
-                        new Node<>(new Tile(3, 0, "@1")),
-                        new Node<>(new Tile(4, 4, "@6")))
-        );
-        System.out.println("parser.converEdgesToAction"+str);
+//
+//        String str = Parser.converEdgesToAction(graph.search(
+//                        new AstarSearch(),
+//                        new Node<>(new Tile(3, 0, "@1")),
+//                        new Node<>(new Tile(4, 4, "@6")))
+//        );
+        //System.out.println("parser.converEdgesToAction"+str);
 
 
     }
