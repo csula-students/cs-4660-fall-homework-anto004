@@ -12,14 +12,14 @@ public class MyTest {
         File file1 = new File("/Users/anto004/Desktop/AI/cs4660-fall-2016/src/test/resources/homework-1/graph-1.txt");
 
         File file2 = new File("/Users/anto004/Desktop/AI/cs4660-fall-2016/src/test/resources/homework-1/graph-2.txt");
-       // AdjacencyList al = new AdjacencyList(file2);
+       AdjacencyList al = new AdjacencyList(file1);
 
-        //System.out.println(al.addEdge(new Edge(new Node(1), new Node(4),1)));
-       // System.out.println(al.removeNode(new Node(6)));
+        System.out.println(al.addEdge(new Edge(new Node(1), new Node(4),1)));
+        //System.out.println(al.removeNode(new Node(6)));
        // System.out.println(al.removeEdge(new Edge(new Node(6), new Node(5), 1)));
         //System.out.println(al.distance(new Node (3), new Node(5)));
 
-        AdjacencyMatrix am = new AdjacencyMatrix(file2);
+        //AdjacencyMatrix am = new AdjacencyMatrix(file2);
        // System.out.println(am.removeNode(new Node(6)));
         //System.out.println(am.addNode(new Node(1)));
 //        System.out.println(am.removeEdge(new Edge(new Node(1), new Node(2), 1)));
@@ -32,9 +32,7 @@ public class MyTest {
         //System.out.println(oo.removeNode(new Node(6)));
         // System.out.println(al.removeEdge(new Edge(new Node(6), new Node(5), 1)));
        // System.out.println(oo.distance(new Node (3), new Node(5)));
-        Node testdistNode = new Node(0);
-        testdistNode.setDistance(5);
-        System.out.print("Integer MAX value after adding"+Integer.MAX_VALUE + 20);
+
 
     }
 }
