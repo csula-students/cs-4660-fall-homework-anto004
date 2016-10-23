@@ -61,7 +61,7 @@ public class AstarSearch implements SearchStrategy {
             // pop with the lowest fscore
             Node u = frontier.poll();
             Tile uTile = (Tile)u.getData();
-            System.out.println("frontier.poll():" + uTile.getX() +" "+uTile.getY());
+           // System.out.println("frontier.poll():" + uTile.getX() +" "+uTile.getY());
             if (u.equals(dist)) {
                 System.out.println("found goal");
 
@@ -87,15 +87,15 @@ public class AstarSearch implements SearchStrategy {
             exploredMap.put(u, u);
 
             for (Node node : graph.neighbors(u)) {
-                System.out.println("Neighbor of " + u + " is " + node);
+               // System.out.println("Neighbor of " + u + " is " + node);
                 if (exploredMap.containsValue(node)) {
-                    System.out.println("Explored map already contains" + exploredMap.get(node));
+                    //System.out.println("Explored map already contains" + exploredMap.get(node));
                     continue;
                 }
 
                 int tempGScore = gscore.get(u) + 1;
-                System.out.println("tempGScore=" + tempGScore);
-                System.out.println("gscore.get(node):"+gscore.get(node));
+               // System.out.println("tempGScore=" + tempGScore);
+               // System.out.println("gscore.get(node):"+gscore.get(node));
 
                 if (!gscore.containsKey(node) || tempGScore < gscore.get(node)) {
                     gscore.put(node, tempGScore);

@@ -27,21 +27,18 @@ public class Parser {
 
         try {
             List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
-            //gridDebug(lines);
 
             List<String> newLines = removeBorders(lines);
             Tile gridMatrix[][] = readLinesToMatrix(newLines);
 
-            gridMatrixDebug(gridMatrix);
+           // gridMatrixDebug(gridMatrix);
 
             for (Tile[] tileArray : gridMatrix) {
                 for (Tile tile : tileArray) {
                     if (tile != null) {
-                        // System.out.println("TILE PASSED :" + tile.getX()+" "+tile.getY());
                         List<Edge> edges = creatingTileEdges(gridMatrix, tile);
                         graph.addNode(new Node<Tile>(tile));
                         for (Edge edge : edges) {
-                            // System.out.println("edge added to graph: "+edge);
                             graph.addEdge(edge);
                         }
                     }
@@ -52,9 +49,6 @@ public class Parser {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        Node node = new Node<Tile>(new Tile(3, 0, "@1"));
-//        System.out.println("neighbor of Tile 3,0" + graph.neighbors(node));
-
 
         return graph;
     }
@@ -87,11 +81,6 @@ public class Parser {
             edges.add(new Edge(fromNode, toNode, 1));
         }
 
-        System.out.println(edges);
-//        System.out.println("Neighbor of"+tile.getX()+" "+tile.getY());
-//        for (Edge edge: edges){
-//            System.out.println("edge: "+edge);
-//        }
         return edges;
     }
 
@@ -99,7 +88,7 @@ public class Parser {
         int rowSize = lines.size();
         int colSize = lines.get(1).length()/2;
         Tile[][] gridMatrix = new Tile[rowSize][colSize];
-        System.out.println(gridMatrix.length + " " + colSize);
+
         StringBuilder stringType = new StringBuilder();
         for (int row = 0; row < rowSize; row++) {
             // look at two char at a time from the current string
@@ -125,7 +114,7 @@ public class Parser {
 //                if(gridMatrix[row][col] != null)
 //                    System.out.print(gridMatrix[row][col].getType()+ " ");
                 //System.out.println("col "+col);
-                System.out.print(gridMatrix[row][col].getType());
+               // System.out.print(gridMatrix[row][col].getType());
             }
             System.out.println();
         }
