@@ -6,6 +6,7 @@ import csula.cs4660.graphs.Node;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Stream;
@@ -17,149 +18,180 @@ import java.util.Map.*;
  * TODO: please fill the method body of this class
  */
 public class AdjacencyMatrix implements Representation {
-    private Node[] nodes = new Node[11];
-    private int[][] adjacencyMatrix = new int[11][11];
-    private HashMap<String, Node> nodeMap = new HashMap<>();
+    private Node[] nodes;
+    private int[][] adjacencyMatrix;
 
     public AdjacencyMatrix(File file) {
-        for(int i=0; i < 11; i++)
-            for(int j=0; j < 11; j++) {
-                adjacencyMatrix[i][j] = 0;
+
+        try {
+            List<String> lines = Files.readAllLines(file.toPath(),Charset.defaultCharset());
+            int size = Integer.parseInt(lines.get(0));
+
+            nodes = new Node[size];
+            adjacencyMatrix= new int[size][size];
+            for(int i=0; i < adjacencyMatrix.length; i++)
+                for(int j=0; j < adjacencyMatrix.length; j++) {
+                    adjacencyMatrix[i][j] = 0;
             }
 
-        try (Stream<String> stream = Files.lines(file.toPath())) {
-            stream.forEach(line -> {
-                for (String token: line.split(" ")) {
-                    if(token.contains(":")) {
-                        String[] currentLine = token.split(":");
-                        Integer row = Integer.parseInt(currentLine[0]);
-                        Integer column = Integer.parseInt(currentLine[1]);
-                        Integer value = Integer.parseInt(currentLine[2]);
-                        adjacencyMatrix[row][column] = value;
-                        nodeMap.put("node-"+ row, new Node(row));
-                        nodeMap.put("node-"+ column, new Node(column));
 
-                    }
+            for(int i=0; i < lines.size(); i++) {
+                if(lines.get(i).contains(":")) {
+                    String[] currentLine = lines.get(i).split(":");
+                    Integer row = Integer.parseInt(currentLine[0]);
+                    Integer column = Integer.parseInt(currentLine[1]);
+                    Integer value = Integer.parseInt(currentLine[2]);
+                    adjacencyMatrix[row][column] = value;
                 }
-            });
+
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        for(int i=0; i < nodes.length; i++){
+            nodes[i] = new Node(i);
 
-        List<Node> nodeList = new ArrayList<>(nodeMap.values());
-        for(int i=0; i < nodeList.size(); i++){
-            nodes[i] = nodeList.get(i);
         }
 
-//        Collection<Entry<String,Node>> entrySett = nodeMap.entrySet();
-//        Iterator<Entry<String, Node>> iterator = entrySett.iterator();
-//        while(iterator.hasNext()){
-//            Entry entry = iterator.next();
-//            Node node = (Node) entry.getValue();
-//            System.out.println(node);
-//        }
-
-        System.out.print("  ");
-        for(int q=0; q<adjacencyMatrix.length; q++)
-            System.out.print(q+ " ");
-        System.out.println();
-        for(int i=0; i< adjacencyMatrix.length; i++) {
-            System.out.print(i + " ");
-            for (int j = 0; j < adjacencyMatrix.length; j++) {
-                System.out.print(adjacencyMatrix[i][j] + " ");
-            }
-            System.out.println();
-        }
     }
 
     public AdjacencyMatrix() {
-
+        nodes = new Node[0];
+        adjacencyMatrix = new int[0][0];
     }
 
     @Override
     public boolean adjacent(Node x, Node y) {
-        int row = (int) x.getData();
-        int column = (int) y.getData();
-        if(adjacencyMatrix[row][column] == 1)
+        int row = indexOfNode(x);
+        int column = indexOfNode(y);
+
+        if(adjacencyMatrix[row][column] != 0)
             return true;
         return false;
     }
 
     @Override
     public List<Node> neighbors(Node x) {
-        int row = (int) x.getData();
-        List<Node> nodes = Lists.newArrayList();
-        for(int i=0; i < adjacencyMatrix.length; i++){
-            if(adjacencyMatrix[row][i] != 0){
-                nodes.add(new Node(i));
+        int row = indexOfNode(x);
+
+        List<Node> result = Lists.newArrayList();
+        //return an empty list, node doesn't exist
+        if (row == -1)
+            return result;
+
+        for(int column=0; column < adjacencyMatrix[row].length; column++){
+            if(adjacencyMatrix[row][column] != 0){
+                result.add(nodes[column]);
             }
         }
-        return nodes;
+
+        return result;
     }
 
     @Override
     public boolean addNode(Node x) {
-        for(int i=0; i<nodes.length; i++){
-            if(nodes[i].getData() ==  x.getData())
-                return false;
-        }
+
+        if(indexOfNode(x) > -1)
+            return false;
         Node [] newNodes = Arrays.copyOf(nodes, nodes.length+1);
-        newNodes[nodes.length - 1]= x;
+       // System.out.println("newNodes.length:"+newNodes.length);
+        newNodes[newNodes.length - 1]= x;
         nodes = newNodes;
-        System.out.println("Addedd New Node:"+nodes[nodes.length-2]);
+        //System.out.println("Addedd New Node:"+nodes[nodes.length - 1]);
+
+        int[][] newMatrix = new int[adjacencyMatrix.length + 1][adjacencyMatrix.length + 1];
+
+        for (int i = 0; i < adjacencyMatrix.length; i++) {
+            newMatrix[i] = Arrays.copyOf(adjacencyMatrix[i], newMatrix[i].length);
+        }
+        adjacencyMatrix = newMatrix;
+
         return true;
     }
 
     @Override
     public boolean removeNode(Node x) {
-        int row = (int)x.getData();
+        int row = indexOfNode(x);
         if(!(Arrays.asList(nodes).contains(x)))
             return false;
 
-        List<Node> nodeList = new ArrayList<>(Arrays.asList(nodes));
-        nodeList.remove(x);
-        nodes = nodeList.toArray(nodes);
+        Node[] newNodes = new Node[nodes.length - 1];
+        for (int i = 0, k = 0; i < nodes.length; i++) {
+            // don't copy this one, this is x...
+            if (i == row) continue;
+
+            // copy everything else!
+            newNodes[k++] = nodes[i];
+        }
+
+        nodes = newNodes;
+
         // array is no longer sorted
-        for(int column=0; column< adjacencyMatrix.length; column ++){
+        for(int column=0; column< adjacencyMatrix[row].length; column ++){
             adjacencyMatrix[row][column] = 0;
             adjacencyMatrix[column][row] = 0;
         }
-        System.out.println("Removed Node:"+x);
+       // System.out.println("Removed Node:"+x);
+
         return true;
     }
 
     @Override
     public boolean addEdge(Edge x) {
-        int row = (int)x.getFrom().getData();
-        int column = (int)x.getTo().getData();
-        if(adjacencyMatrix[row][column] == 1)
+        int row = indexOfNode(x.getFrom());
+        int column = indexOfNode(x.getTo());
+
+        if (row == -1) {
+            addNode(x.getFrom());
+        }
+
+        if (column == -1) {
+            addNode(x.getTo());
+        }
+
+        if (row == -1 || column == -1) {
+            row = indexOfNode(x.getFrom());
+            column = indexOfNode(x.getTo());
+        }
+       // System.out.println("row:"+row+" col :"+column);
+        if(adjacencyMatrix[row][column] !=0 )
             return false;
+
         adjacencyMatrix[row][column] = x.getValue();
-        System.out.println("Added Edge: Node"+row+" and Node"+ column+"- " +adjacencyMatrix[row][column]);
+       // System.out.println("Added Edge: Node"+row+" and Node"+ column+"- " +adjacencyMatrix[row][column]);
         return true;
     }
 
     @Override
     public boolean removeEdge(Edge x) {
-        int row = (int)x.getFrom().getData();
-        int column = (int)x.getTo().getData();
-        if(adjacencyMatrix[row][column] == 0)
+        int row = indexOfNode(x.getFrom());
+        int column = indexOfNode(x.getTo());
+        if(row == -1 || column == -1 || adjacencyMatrix[row][column] == 0)
             return false;
         adjacencyMatrix[row][column] = 0;
-        System.out.println("Removed Edge:"+x);
         return true;
 
     }
 
     @Override
     public int distance(Node from, Node to) {
-        int row = (int)from.getData();
-        int col = (int )to.getData();
+        int row = indexOfNode(from);
+        int col = indexOfNode(to);
         return adjacencyMatrix[row][col];
     }
 
     @Override
     public Optional<Node> getNode(int index) {
+
         return null;
+    }
+
+    private int indexOfNode(Node x) {
+        int index = -1;
+        for (int i = 0; i < nodes.length; i++) {
+            if (nodes[i].equals(x))
+                index = i;
+        }
+        return index;
     }
 }

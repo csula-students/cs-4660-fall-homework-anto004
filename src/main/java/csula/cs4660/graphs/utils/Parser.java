@@ -12,9 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -25,24 +23,19 @@ public class Parser {
 
     public static Graph readRectangularGridFile(Representation.STRATEGY graphRepresentation, File file) {
         Graph graph = new Graph(Representation.of(graphRepresentation));
-        // TODO: implement the rectangular file read and add node with edges to graph
-        System.out.println("readRectangularGridFile");
-
 
         try {
-            List<String> lines = Files.readAllLines(file.toPath(),Charset.defaultCharset());
-            Tile gridMatrix[][] = readLinesToMatrix(lines);
-            gridDebug(lines);
-            gridMatrixDebug(gridMatrix);
+            List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
 
-            for(Tile []tileArray: gridMatrix){
-                for(Tile tile: tileArray){
-                    if(tile != null) {
-                        System.out.println("TILE PASSED :" + tile.getX()+" "+tile.getY());
+            List<String> newLines = removeBorders(lines);
+            Tile gridMatrix[][] = readLinesToMatrix(newLines);
+
+            for (Tile[] tileArray : gridMatrix) {
+                for (Tile tile : tileArray) {
+                    if (tile != null) {
                         List<Edge> edges = creatingTileEdges(gridMatrix, tile);
                         graph.addNode(new Node<Tile>(tile));
-                        for(Edge edge: edges) {
-                            System.out.println("edge added to graph: "+edge);
+                        for (Edge edge : edges) {
                             graph.addEdge(edge);
                         }
                     }
@@ -53,112 +46,69 @@ public class Parser {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Node node = new Node<Tile>(new Tile(3,0,"@1"));
-        System.out.println("neighbor of Tile 3,0"+ graph.neighbors(node));
-
-
 
         return graph;
     }
 
     private static List<Edge> creatingTileEdges(Tile[][] gridMatrix, Tile tile) {
+        //Received help from Shay Nguyen
         List<Edge> edges = Lists.newArrayList();
-        //checking for left wall
-        if(((tile.getX()-1) >=0) && (gridMatrix[tile.getY()][tile.getX()-1] != null)){
-            Node fromNode = new Node<Tile>(tile);
-            Node toNode = new Node<Tile>(gridMatrix[tile.getY()][tile.getX()-1]);
-            edges.add(new Edge(fromNode, toNode, 1 ));
-        }
         // checking for right wall
-        if(((tile.getX()+1) < gridMatrix[tile.getY()].length) && (gridMatrix[tile.getY()][tile.getX()+1] != null)){
+        if (((tile.getX() + 1) < gridMatrix[0].length) && (gridMatrix[tile.getY()][tile.getX() + 1] != null)) {
             Node fromNode = new Node<Tile>(tile);
-            Node toNode = new Node<Tile>(gridMatrix[tile.getY()][tile.getX()+1]);
-            edges.add(new Edge(fromNode, toNode, 1 ));
+            Node toNode = new Node<Tile>(gridMatrix[tile.getY()][tile.getX() + 1]);
+            edges.add(new Edge(fromNode, toNode, 1));
         }
-        //checking for up wall
-        if(((tile.getY()- 1) >=0) && (gridMatrix[tile.getY()-1][tile.getX()] != null)){
+        //checking for left wall
+        if (((tile.getX() - 1) >= 0) && (gridMatrix[tile.getY()][tile.getX() - 1] != null)) {
             Node fromNode = new Node<Tile>(tile);
-            Node toNode = new Node<Tile>(gridMatrix[tile.getY()-1][tile.getX()]);
-            edges.add(new Edge(fromNode, toNode, 1 ));
+            Node toNode = new Node<Tile>(gridMatrix[tile.getY()][tile.getX() - 1]);
+            edges.add(new Edge(fromNode, toNode, 1));
         }
         //checking for bottom wall
-        if(((tile.getY()+1) < gridMatrix.length) && (gridMatrix[tile.getY()+1][tile.getX()] != null)){
+        if (((tile.getY() + 1) < gridMatrix.length) && (gridMatrix[tile.getY() + 1][tile.getX()] != null)) {
             Node fromNode = new Node<Tile>(tile);
-            Node toNode = new Node<Tile>(gridMatrix[tile.getY()+1][tile.getX()]);
-            edges.add(new Edge(fromNode, toNode, 1 ));
+            Node toNode = new Node<Tile>(gridMatrix[tile.getY() + 1][tile.getX()]);
+            edges.add(new Edge(fromNode, toNode, 1));
         }
-//        System.out.println("Neighbor of"+tile.getX()+" "+tile.getY());
-//        for (Edge edge: edges){
-//            System.out.println("edge: "+edge);
-//        }
+        //checking for up wall
+        if (((tile.getY() - 1) >= 0) && (gridMatrix[tile.getY() - 1][tile.getX()] != null)) {
+            Node fromNode = new Node<Tile>(tile);
+            Node toNode = new Node<Tile>(gridMatrix[tile.getY() - 1][tile.getX()]);
+            edges.add(new Edge(fromNode, toNode, 1));
+        }
+
         return edges;
     }
 
-    public static Tile [][] readLinesToMatrix (List<String> lines){
+    public static Tile[][] readLinesToMatrix(List<String> lines) {
         int rowSize = lines.size();
-        int colSize = lines.get(1).length();
-        Tile [][] gridMatrix = new Tile[rowSize][colSize];
-        StringBuilder stringType = new StringBuilder();
-        int colStartingValue = 0;
-        int testValue =0;
-        int testValue2 =0;
-        for(int row=1; row < lines.size(); row++){
-            String [] currentLine = lines.get(row).split("");
-            for(int col=1; col<currentLine.length-1; col+= 2) {
-                if((!currentLine[col].contains("#")) && (!currentLine[col].contains("|")) && (!currentLine[col].contains("-"))){
-                   // gridMatrix[row - 1][col - 1] = new Tile(row - 1, col - 1, currentLine[col] + currentLine[col + 1]);
-                    gridMatrix[row-1][(col-1)/2] = new Tile((col-1)/2, row-1, stringType.append(currentLine[col])
-                            .append(currentLine[col+1]).toString());
-                    stringType.setLength(0);
-                    System.out.println("gridMatrix at" + ((col-1)/2)+ " " + (row-1) + " is" + gridMatrix[row-1][(col-1)/2]);
-                    //graph.addNode(new Node(gridMatrix[row-1][col-1]));
-                }
+        int colSize = lines.get(1).length()/2;
+        Tile[][] gridMatrix = new Tile[rowSize][colSize];
 
+        StringBuilder stringType = new StringBuilder();
+        for (int row = 0; row < rowSize; row++) {
+            // look at two char at a time from the current string
+            for (int col = 0; col < lines.get(1).length() ; col += 2) {
+                stringType.append(lines.get(row).substring(col, col + 2));
+                // since loop start at 1, then to subtract 1
+                // row = y, col = x
+                // matrix[y][x] but tile (x,y)
+                gridMatrix[row ][(col/2)] = new Tile((col/2), row , stringType.toString());
+                // reset the string builder
+                stringType.setLength(0);
             }
-            colStartingValue=0;
-            testValue=0;
-            testValue2=0;
         }
         return gridMatrix;
     }
-    public static void gridDebug(List<String> lines){
-        System.out.print("  ");
-        for(int q=1; q< lines.size()*2; q++)
-            System.out.print((q-1) % 10 + " ");
-        System.out.println();
-        for (int i = 1; i < lines.size(); i++) {
-            String [] currentLine = lines.get(i).split("");
-            System.out.print((i-1) + " ");
-            for (int j = 1; j < currentLine.length; j++) {
-                    System.out.print(currentLine[j]+ " ");
-            }
-            System.out.println();
-        }
-
-    }
-    private static void gridMatrixDebug(Tile[][] gridMatrix) {
-        System.out.print("  ");
-
-        for(int q=0; q< gridMatrix.length; q++)
-            System.out.print((q) % 10  + " ");
-        System.out.println();
-        for (int row = 0; row < gridMatrix.length; row++) {
-            System.out.print((row) + " ");
-            for (int col = 0; col < gridMatrix[row].length; col++) {
-//                if(gridMatrix[row][col] != null)
-//                    System.out.print(gridMatrix[row][col].getType()+ " ");
-                System.out.print(gridMatrix[row][col]);
-            }
-            System.out.println();
-        }
-    }
 
     public static String converEdgesToAction(Collection<Edge> edges) {
-        // TODO: convert a list of edges to a list of action
         StringBuilder action = new StringBuilder();
+        Tile tile1, tile2;
         for (Edge edge : edges) {
-            Tile tile1 = (Tile) edge.getFrom().getData();
-            Tile tile2 = (Tile) edge.getTo().getData();
+            tile1 = (Tile) edge.getFrom().getData();
+            tile2 = (Tile) edge.getTo().getData();
+
             if (tile1.getY() > tile2.getY())
                 action.append("N");
             else if (tile1.getX() < tile2.getX())
@@ -170,4 +120,24 @@ public class Parser {
         }
         return action.toString();
     }
+
+
+    public static List<String> removeBorders (List<String> lines) {
+
+        List<String> newLines = Lists.newArrayList();
+        String[] arrayOfCopy = new String[lines.size()];
+
+        lines.remove(0);
+        lines.remove(lines.size() - 1);
+
+        lines.toArray(arrayOfCopy);
+
+        for (int row = 0; row < lines.size(); row++) {
+            String x = lines.get(row).substring(1, lines.get(0).length() - 1);
+            newLines.add(x);
+        }
+        return newLines;
+    }
+
+
 }
