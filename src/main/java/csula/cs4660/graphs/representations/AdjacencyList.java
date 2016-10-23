@@ -78,6 +78,7 @@ public class AdjacencyList implements Representation {
         List<Node> nodes = Lists.newArrayList();
         for(Edge edge: edges){
             nodes.add(edge.getTo());
+            //System.out.println("Adjacency List Representation: "+edge);
         }
         return nodes;
     }
@@ -100,7 +101,6 @@ public class AdjacencyList implements Representation {
             Iterator<Map.Entry<Node, List<Edge>>> iteratorNode = keySet.iterator();
             while(iteratorNode.hasNext()) {
                 Entry entry = iteratorNode.next();
-               // System.out.println("entry: "+entry);
                 List<Edge> edges = (List<Edge>) entry.getValue();
                 for(Edge edge: edges) {
                     if (edge.getTo().getData() == x.getData()) {
@@ -121,7 +121,6 @@ public class AdjacencyList implements Representation {
             // assuming there are already nodes of that edge present
             adjacencyList.get(x.getFrom()).add(x);
         }
-
         return true;
     }
 
@@ -141,6 +140,7 @@ public class AdjacencyList implements Representation {
                 }
             }
         }
+
         return true;
     }
 

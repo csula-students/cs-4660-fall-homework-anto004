@@ -26,6 +26,7 @@ public class AdjacencyMatrix implements Representation {
         try {
             List<String> lines = Files.readAllLines(file.toPath(),Charset.defaultCharset());
             int size = Integer.parseInt(lines.get(0));
+
             nodes = new Node[size];
             adjacencyMatrix= new int[size][size];
             for(int i=0; i < adjacencyMatrix.length; i++)
@@ -49,7 +50,9 @@ public class AdjacencyMatrix implements Representation {
         }
         for(int i=0; i < nodes.length; i++){
             nodes[i] = new Node(i);
+
         }
+
     }
 
     public AdjacencyMatrix() {
@@ -87,7 +90,6 @@ public class AdjacencyMatrix implements Representation {
 
     @Override
     public boolean addNode(Node x) {
-
 
         if(indexOfNode(x) > -1)
             return false;
@@ -167,19 +169,6 @@ public class AdjacencyMatrix implements Representation {
         if(row == -1 || column == -1 || adjacencyMatrix[row][column] == 0)
             return false;
         adjacencyMatrix[row][column] = 0;
-//        System.out.println("Removed Edge:"+x);
-//
-//        System.out.print("  ");
-//        for(int q=0; q<adjacencyMatrix.length; q++)
-//            System.out.print(q+ " ");
-//        System.out.println();
-//        for(int i=0; i< adjacencyMatrix.length; i++) {
-//            System.out.print(i + " ");
-//            for (int j = 0; j < adjacencyMatrix.length; j++) {
-//                System.out.print(adjacencyMatrix[i][j] + " ");
-//            }
-//            System.out.println();
-//        }
         return true;
 
     }
@@ -199,8 +188,6 @@ public class AdjacencyMatrix implements Representation {
 
     private int indexOfNode(Node x) {
         int index = -1;
-//        for(int i=0; i<nodes.length; i++)
-//            System.out.println("indexOfNode: "+i+ " is "+nodes[i]);
         for (int i = 0; i < nodes.length; i++) {
             if (nodes[i].equals(x))
                 index = i;
