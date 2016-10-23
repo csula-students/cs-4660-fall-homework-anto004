@@ -1,11 +1,14 @@
 package csula.cs4660.graphs.representations;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import csula.cs4660.graphs.Edge;
 import csula.cs4660.graphs.Node;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Stream;
@@ -17,35 +20,42 @@ import java.util.stream.Stream;
  * TODO: Please fill the body of methods in this class
  */
 public class ObjectOriented implements Representation {
-    private Collection<Node> nodes;
-    private Collection<Edge> edges;
+    private List<Node> nodes;
+    private List<Edge> edges;
+
+    private BiMap<Node, Integer> nodeIndex = HashBiMap.create();
+    private int count = 0;
 
     public ObjectOriented(File file) {
+        nodes = new ArrayList<>();
         edges = Lists.newArrayList();
-        HashMap<String, Node> nodeMap = new HashMap();
 
-        try (Stream<String> stream = Files.lines(file.toPath())) {
-            stream.forEach(line -> {
-                for (String token: line.split(" ")) {
-                    if(token.contains(":")) {
-                        String[] currentLine = token.split(":");
+        try {
+            List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
 
-                        Node fromNode = new Node(Integer.parseInt(currentLine[0]));
-                        Node toNodeEdge = new Node(Integer.parseInt(currentLine[1]));
-                        Integer edgeValue = Integer.parseInt(currentLine[2]);
+            int numOfNodes = Integer.parseInt(lines.get(0));
+            for(int i=0; i<numOfNodes; i++){
+                nodes.add(new Node(i));
+                nodeIndex.put(nodes.get(i), count++);
+            }
 
-                        nodeMap.put("node-" + Integer.parseInt(currentLine[0]), fromNode);
-                        nodeMap.put("node-" + Integer.parseInt(currentLine[1]), toNodeEdge);
-
-                        Edge edge = new Edge(fromNode, toNodeEdge, edgeValue);
-                        edges.add(edge);
-                    }
+            for(String str: lines){
+                if(str.contains(":")){
+                    String[] currentLine = str.split(":");
+                    Node fromNode = new Node(Integer.parseInt(currentLine[0]));
+                    Node toNodeEdge = new Node(Integer.parseInt(currentLine[1]));
+                    Integer edgeValue = Integer.parseInt(currentLine[2]);
+                    Edge edge = new Edge(fromNode, toNodeEdge, edgeValue);
+                    edges.add(edge);
                 }
-            });
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        nodes = new ArrayList<Node>(nodeMap.values());
+
+        for (Edge edge : edges)
+            nodes.get(nodeIndex.get(edge.getFrom())).addNeighbor(edge.getTo());
+
         for(Node node: nodes)
             System.out.println("Node:"+node);
 
@@ -55,51 +65,43 @@ public class ObjectOriented implements Representation {
     }
 
     public ObjectOriented() {
-
+        nodes = Lists.newArrayList();
+        edges = Lists.newArrayList();
     }
 
     @Override
     public boolean adjacent(Node x, Node y) {
-        for(Edge edge: edges){
-            if (edge.getFrom().getData() == x.getData() && edge.getTo().getData() == y.getData()){
-                return true;
-            }
-        }
-        return false;
+       // System.out.println("nodes.get: "+nodes.get(nodeIndex.get(x)));
+        return nodes.get(nodeIndex.get(x)).isNeighbor(y);
     }
 
     @Override
     public List<Node> neighbors(Node x) {
-        List<Node> nodeList = Lists.newArrayList();
-        for(Edge edge: edges){
-            if (edge.getFrom().getData() == x.getData()){
-                nodeList.add(new Node(edge.getTo().getData()));
-            }
-        }
-        return nodeList;
+        int index = nodeIndex.get(x);
+        Node node = nodeIndex.inverse().get(index);
+
+        return node.getNeighbors();
     }
 
     @Override
     public boolean addNode(Node x) {
-        if(nodes.contains(x))
+        Integer index = nodeIndex.get(x);
+        if (index != null)
             return false;
-        nodes.add(new Node(x));
+        nodes.add(x);
+        nodeIndex.put(x, count++);
+
         return true;
     }
 
     @Override
     public boolean removeNode(Node x) {
-        if(!nodes.contains(x))
+        if (!nodes.contains(x))
             return false;
-        nodes.remove(x);
-        for(Iterator<Edge> iterator = edges.iterator(); iterator.hasNext();){
-            Edge edge = iterator.next();
-            if(edge.getFrom().getData() == x.getData() ||
-                    edge.getTo().getData() == x.getData())
-                iterator.remove();
-        }
-//        for(Edge edge: edges)
-//            System.out.println("New Edge:"+edge);
+        nodeIndex.remove(x);
+
+        for (Node node : nodes)
+            node.removeNeighbor(x);
 
         return true;
     }
@@ -107,21 +109,23 @@ public class ObjectOriented implements Representation {
     @Override
     public boolean addEdge(Edge x) {
         for(Edge edge: edges){
-            if (edge.getFrom().getData() == x.getFrom().getData() &&
-                    edge.getTo().getData() == x.getTo().getData()){
+            if (edge.equals(x)){
                 return false;
             }
         }
         edges.add(x);
-        return true;
+
+        return nodes.get(nodeIndex.get(x.getFrom())).addNeighbor(x.getTo());
     }
 
     @Override
     public boolean removeEdge(Edge x) {
         if(!edges.contains(x))
             return false;
+
         edges.remove(x);
-        return true;
+
+        return nodes.get(nodeIndex.get(x.getFrom())).removeNeighbor(x.getTo());
     }
 
     @Override

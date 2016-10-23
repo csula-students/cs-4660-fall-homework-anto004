@@ -23,9 +23,7 @@ public class Parser {
 
     public static Graph readRectangularGridFile(Representation.STRATEGY graphRepresentation, File file) {
         Graph graph = new Graph(Representation.of(graphRepresentation));
-        // TODO: implement the rectangular file read and add node with edges to graph
         System.out.println("readRectangularGridFile");
-
 
         try {
             List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
@@ -54,14 +52,15 @@ public class Parser {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Node node = new Node<Tile>(new Tile(3, 0, "@1"));
-        System.out.println("neighbor of Tile 3,0" + graph.neighbors(node));
+//        Node node = new Node<Tile>(new Tile(3, 0, "@1"));
+//        System.out.println("neighbor of Tile 3,0" + graph.neighbors(node));
 
 
         return graph;
     }
 
     private static List<Edge> creatingTileEdges(Tile[][] gridMatrix, Tile tile) {
+        //Received help from Shay Nguyen
         List<Edge> edges = Lists.newArrayList();
         // checking for right wall
         if (((tile.getX() + 1) < gridMatrix[0].length) && (gridMatrix[tile.getY()][tile.getX() + 1] != null)) {
@@ -133,11 +132,12 @@ public class Parser {
     }
 
     public static String converEdgesToAction(Collection<Edge> edges) {
-        // TODO: convert a list of edges to a list of action
         StringBuilder action = new StringBuilder();
+        Tile tile1, tile2;
         for (Edge edge : edges) {
-            Tile tile1 = (Tile) edge.getFrom().getData();
-            Tile tile2 = (Tile) edge.getTo().getData();
+            tile1 = (Tile) edge.getFrom().getData();
+            tile2 = (Tile) edge.getTo().getData();
+
             if (tile1.getY() > tile2.getY())
                 action.append("N");
             else if (tile1.getX() < tile2.getX())
