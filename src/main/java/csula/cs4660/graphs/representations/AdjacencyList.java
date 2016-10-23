@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.Map.*;
 
@@ -22,12 +23,13 @@ import java.util.Map.*;
  * TODO: please implement the method body
  */
 public class AdjacencyList implements Representation {
-    private Map<Node,List<Edge>> adjacencyList = new HashMap<>();
+    private Map<Node,List<Edge>> adjacencyList;
     private Node nodeArray[];
 
     protected AdjacencyList(File file) {
+        adjacencyList = new HashMap<>();
         List<Edge> edges = Lists.newArrayList();
-        HashMap<String, Node> nodeMap = new HashMap();
+        //HashMap<String, Node> nodeMap = new HashMap();
 
         try {
             List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
@@ -56,7 +58,7 @@ public class AdjacencyList implements Representation {
     }
 
     protected AdjacencyList() {
-
+        adjacencyList = new HashMap<>();
     }
 
     @Override
@@ -81,6 +83,7 @@ public class AdjacencyList implements Representation {
             //System.out.println("Adjacency List Representation: "+edge);
         }
         return nodes;
+
     }
 
     @Override

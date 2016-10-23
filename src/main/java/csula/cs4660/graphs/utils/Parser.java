@@ -23,15 +23,12 @@ public class Parser {
 
     public static Graph readRectangularGridFile(Representation.STRATEGY graphRepresentation, File file) {
         Graph graph = new Graph(Representation.of(graphRepresentation));
-        System.out.println("readRectangularGridFile");
 
         try {
             List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
 
             List<String> newLines = removeBorders(lines);
             Tile gridMatrix[][] = readLinesToMatrix(newLines);
-
-           // gridMatrixDebug(gridMatrix);
 
             for (Tile[] tileArray : gridMatrix) {
                 for (Tile tile : tileArray) {
@@ -105,21 +102,6 @@ public class Parser {
         return gridMatrix;
     }
 
-    private static void gridMatrixDebug(Tile[][] gridMatrix) {
-        System.out.print("  ");
-
-        for (int row = 0; row < gridMatrix.length; row++) {
-           // System.out.print((row) + " ");
-            for (int col = 0; col < gridMatrix[0].length; col++) {
-//                if(gridMatrix[row][col] != null)
-//                    System.out.print(gridMatrix[row][col].getType()+ " ");
-                //System.out.println("col "+col);
-               // System.out.print(gridMatrix[row][col].getType());
-            }
-            System.out.println();
-        }
-    }
-
     public static String converEdgesToAction(Collection<Edge> edges) {
         StringBuilder action = new StringBuilder();
         Tile tile1, tile2;
@@ -156,13 +138,6 @@ public class Parser {
         }
         return newLines;
     }
-
-    public static void main(String[] args) throws IOException {
-        File file = new File("/Users/anto004/Desktop/AI/cs4660-fall-2016/src/test/resources/homework-2/grid-1.txt");
-        List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
-        Tile[][] matrix = readLinesToMatrix(lines);
-        removeBorders(lines);
-       }
 
 
 }

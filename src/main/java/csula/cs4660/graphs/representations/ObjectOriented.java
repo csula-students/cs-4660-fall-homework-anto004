@@ -56,11 +56,6 @@ public class ObjectOriented implements Representation {
         for (Edge edge : edges)
             nodes.get(nodeIndex.get(edge.getFrom())).addNeighbor(edge.getTo());
 
-        for(Node node: nodes)
-            System.out.println("Node:"+node);
-
-        for(Edge edge: edges)
-            System.out.println("Edge:"+edge);
 
     }
 

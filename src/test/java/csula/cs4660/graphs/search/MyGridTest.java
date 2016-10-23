@@ -6,8 +6,12 @@ import csula.cs4660.graphs.Node;
 import csula.cs4660.graphs.representations.Representation;
 import csula.cs4660.graphs.searches.AstarSearch;
 import csula.cs4660.graphs.utils.Parser;
+import org.junit.Test;
 
 import java.io.File;
+import java.util.Arrays;
+
+import static junit.framework.TestCase.assertEquals;
 
 /**
  * Created by anto004 on 10/13/16.
@@ -28,6 +32,8 @@ public class MyGridTest {
                         new Node<>(new Tile(4, 4, "@6")))
         );
         System.out.println("parser.converEdgesToAction: "+str);
+
+
 
 
     }

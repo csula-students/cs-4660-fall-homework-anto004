@@ -1,5 +1,6 @@
 package csula.cs4660.graphs.searches;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import csula.cs4660.games.models.Tile;
 import csula.cs4660.graphs.Edge;
@@ -9,7 +10,7 @@ import csula.cs4660.graphs.Node;
 import java.util.*;
 
 public class AstarSearch implements SearchStrategy {
-    Node u = new Node(Integer.MAX_VALUE);
+
     @Override
     public List<Edge> search(Graph graph, Node source, Node dist) {
         System.out.println("AStar");
@@ -61,16 +62,10 @@ public class AstarSearch implements SearchStrategy {
             // pop with the lowest fscore
             Node u = frontier.poll();
             Tile uTile = (Tile)u.getData();
-           // System.out.println("frontier.poll():" + uTile.getX() +" "+uTile.getY());
             if (u.equals(dist)) {
                 System.out.println("found goal");
 
                 List<Edge> result = Lists.newArrayList();
-               // List<Edge> reverseList = Lists.newArrayList();
-
-//                for (Node node : parents.keySet()) {
-//                    System.out.println("Parent of " + node + "is:" + parents.get(node));
-//                }
 
                 while (!parents.get(dist).equals(dist)) {
                     result.add(new Edge(parents.get(dist), u, 1));
@@ -87,21 +82,16 @@ public class AstarSearch implements SearchStrategy {
             exploredMap.put(u, u);
 
             for (Node node : graph.neighbors(u)) {
-               // System.out.println("Neighbor of " + u + " is " + node);
                 if (exploredMap.containsValue(node)) {
-                    //System.out.println("Explored map already contains" + exploredMap.get(node));
                     continue;
                 }
 
                 int tempGScore = gscore.get(u) + 1;
-               // System.out.println("tempGScore=" + tempGScore);
-               // System.out.println("gscore.get(node):"+gscore.get(node));
 
                 if (!gscore.containsKey(node) || tempGScore < gscore.get(node)) {
                     gscore.put(node, tempGScore);
                     parents.put(node, u);
                     fscore.put(node, gscore.get(node) + heuristicCost(node, dist));
-                    //System.out.println(node + "gscore is" + gscore.get(tempGScore));
                 }
 
                 if (!frontier.contains(node)) {
@@ -109,14 +99,8 @@ public class AstarSearch implements SearchStrategy {
                 }
             }
         }
-
         return new ArrayList<>();
     }
-
-    public List<Edge> constructPath(Graph graph, Node<Tile> endTile, Map<Node<Tile>,Node<Tile>> parents, Node<Tile> dist) {
-        return null;
-    }
-
 
     private int heuristicCost(Node node, Node goal) {
         Tile nodeTile = (Tile) node.getData();
