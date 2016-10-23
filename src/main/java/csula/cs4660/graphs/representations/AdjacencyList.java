@@ -9,6 +9,7 @@ import csula.cs4660.graphs.Node;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Stream;
@@ -21,47 +22,36 @@ import java.util.Map.*;
  * TODO: please implement the method body
  */
 public class AdjacencyList implements Representation {
-    private Multimap<Node, Edge> adjacencyList = ArrayListMultimap.create();
-
+    private Map<Node,List<Edge>> adjacencyList = new HashMap<>();
+    private Node nodeArray[];
 
     protected AdjacencyList(File file) {
         List<Edge> edges = Lists.newArrayList();
         HashMap<String, Node> nodeMap = new HashMap();
 
-        try (Stream<String> stream = Files.lines(file.toPath())) {
-            stream.forEach(line -> {
-                for (String token: line.split(" ")) {
-                    if(token.contains(":")) {
-                        String[] currentLine = token.split(":");
+        try {
+            List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
 
-                        Node fromNode = new Node(Integer.parseInt(currentLine[0]));
-                        Node toNodeEdge = new Node(Integer.parseInt(currentLine[1]));
-                        Integer edgeValue = Integer.parseInt(currentLine[2]);
+            int numOfNodes = Integer.parseInt(lines.get(0));
+            nodeArray = new Node[numOfNodes];
 
-                        nodeMap.put("node-" + Integer.parseInt(currentLine[0]), fromNode);
-                        nodeMap.put("node-" + Integer.parseInt(currentLine[1]), toNodeEdge);
+            for(int i=0; i< nodeArray.length; i++){
+                adjacencyList.put(new Node(i), new ArrayList<Edge>());
+            }
 
-                        Edge edge = new Edge(fromNode, toNodeEdge, edgeValue);
-                        edges.add(edge);
-                    }
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        List<Node> nodes = new ArrayList<Node>(nodeMap.values());
 
-        for(Node node: nodes){
-            for(Edge edge: edges) {
-                if (node.getData() == edge.getFrom().getData()) {
-                    adjacencyList.put(node, edge);
+            for(String str: lines){
+                if(str.contains(":")){
+                    String[] currentLine = str.split(":");
+                    Node fromNode = new Node(Integer.parseInt(currentLine[0]));
+                    Node toNodeEdge = new Node(Integer.parseInt(currentLine[1]));
+                    Integer edgeValue = Integer.parseInt(currentLine[2]);
+                    Edge edge = new Edge(fromNode, toNodeEdge, edgeValue);
+                    adjacencyList.get(fromNode).add(edge);
                 }
             }
-        }
-
-        for(Node node: adjacencyList.keySet()){
-            Collection<Edge> edge = adjacencyList.get(node);
-            System.out.println(node+ " : " + edge);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -82,6 +72,8 @@ public class AdjacencyList implements Representation {
 
     @Override
     public List<Node> neighbors(Node x) {
+        if(adjacencyList.get(x) == null)
+            return Lists.newArrayList();
         Collection<Edge> edges = adjacencyList.get(x);
         List<Node> nodes = Lists.newArrayList();
         for(Edge edge: edges){
@@ -95,7 +87,7 @@ public class AdjacencyList implements Representation {
         if (adjacencyList.containsKey(x))
             return false;
         else{
-            adjacencyList.put(x, new Edge());
+            adjacencyList.put(x, new ArrayList<Edge>());
         }
         return true;
     }
@@ -103,54 +95,51 @@ public class AdjacencyList implements Representation {
     @Override
     public boolean removeNode(Node x) {
         if(adjacencyList.containsKey(x)){
-            adjacencyList.removeAll(x);
-            Collection<Map.Entry<Node, Edge>> keySet = adjacencyList.entries();
-            Iterator<Map.Entry<Node, Edge>> iteratorNode = keySet.iterator();
+            adjacencyList.remove(x);
+            Collection<Map.Entry<Node, List<Edge>>> keySet = adjacencyList.entrySet();
+            Iterator<Map.Entry<Node, List<Edge>>> iteratorNode = keySet.iterator();
             while(iteratorNode.hasNext()) {
                 Entry entry = iteratorNode.next();
-                Edge edge = (Edge)entry.getValue();
-                if(edge.getTo().getData() == x.getData()) {
-                    iteratorNode.remove();
+               // System.out.println("entry: "+entry);
+                List<Edge> edges = (List<Edge>) entry.getValue();
+                for(Edge edge: edges) {
+                    if (edge.getTo().getData() == x.getData()) {
+                        iteratorNode.remove();
+                    }
                 }
             }
             return true;
-        }
-        System.out.println("Nodes and Edges after removing Node-"+ x);
-        for(Node node: adjacencyList.keySet()){
-            Collection<Edge> edge = adjacencyList.get(node);
-            System.out.println(node+ " : " + edge);
         }
         return false;
     }
 
     @Override
     public boolean addEdge(Edge x) {
-        if(adjacencyList.containsValue(x))
+        if(adjacencyList.get(x.getFrom()).contains(x))
             return false;
         else{
-            adjacencyList.put(x.getFrom(), x);
+            // assuming there are already nodes of that edge present
+            adjacencyList.get(x.getFrom()).add(x);
         }
+
         return true;
     }
 
     @Override
     public boolean removeEdge(Edge x) {
-        if(!adjacencyList.containsValue(x))
+        if(!adjacencyList.get(x.getFrom()).contains(x))
             return false;
 
-        Collection<Map.Entry<Node, Edge>> keySet = adjacencyList.entries();
-        Iterator<Map.Entry<Node, Edge>> iteratorNode = keySet.iterator();
+        Collection<Map.Entry<Node, List<Edge>>> keySet = adjacencyList.entrySet();
+        Iterator<Map.Entry<Node, List<Edge>>> iteratorNode = keySet.iterator();
         while(iteratorNode.hasNext()) {
             Entry entry = iteratorNode.next();
-            Edge edge = (Edge)entry.getValue();
-            if(edge.getFrom().getData() == x.getFrom().getData() && edge.getTo().getData() == x.getTo().getData()) {
-                iteratorNode.remove();
+            List<Edge> edges = (List<Edge>)entry.getValue();
+            for(Edge edge: edges) {
+                if (edge.getFrom().getData() == x.getFrom().getData() && edge.getTo().getData() == x.getTo().getData()) {
+                    iteratorNode.remove();
+                }
             }
-        }
-        System.out.println("Nodes and Edges after removing Edge-"+ x);
-        for(Node node: adjacencyList.keySet()){
-            Collection<Edge> edge = adjacencyList.get(node);
-            System.out.println(node+ " : " + edge);
         }
         return true;
     }
