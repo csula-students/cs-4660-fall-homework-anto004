@@ -8,12 +8,15 @@ import csula.cs4660.graphs.Edge;
 import csula.cs4660.graphs.Node;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.*;
 import java.util.stream.Stream;
 import java.util.Map.*;
+
+import java.util.*;
+
 
 /**
  * Adjacency list is probably the most common implementation to store the unknown
@@ -158,5 +161,18 @@ public class AdjacencyList implements Representation {
     @Override
     public Optional<Node> getNode(int index) {
         return null;
+    }
+
+    @Override
+    public Optional<Node> getNode(Node node) {
+        Iterator<Node> iterator = adjacencyList.keySet().iterator();
+        Optional<Node> result = Optional.empty();
+        while (iterator.hasNext()) {
+            Node next = iterator.next();
+            if (next.equals(node)) {
+                result = Optional.of(next);
+            }
+        }
+        return result;
     }
 }
