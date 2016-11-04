@@ -31,10 +31,10 @@ public class DFS implements SearchStrategy {
             System.out.println("Parent of "+ key + "is:"+ parent.get(key));
         }
         while(parent.get(endTile) != null){
-            Node fromNode = new Node(parent.get(endTile).getData());
-            Node toNode = new Node(endTile.getData());
+            Node fromNode = parent.get(endTile);
+            Node toNode = endTile;
             result.add(new Edge(fromNode, toNode, graph.distance(fromNode, toNode)));
-            endTile = new Node(fromNode.getData());
+            endTile = fromNode;
         }
         for(Edge edge: result){
             System.out.println("DFS Result list:"+ edge);
@@ -62,7 +62,7 @@ public class DFS implements SearchStrategy {
             }
         }
         if(node.equals(dest)){
-            endTile = new Node(node.getData());
+            endTile = node;
             System.out.println("Found Goal"+ endTile);
         }
     }

@@ -32,7 +32,7 @@ public class BFS implements SearchStrategy {
                 if(!exploredSet.contains(node)){
                     parent.put(node, u);
                     if(node.equals(dest)){
-                        endTile = new Node(node.getData());
+                        endTile = node;
                         //System.out.println("Found Goal");
                     }
                     queue.add(node);
@@ -49,10 +49,10 @@ public class BFS implements SearchStrategy {
         }
 
        while(parent.get(endTile) != null){
-           Node fromNode = new Node(parent.get(endTile).getData());
-           Node toNode = new Node(endTile.getData());
+           Node fromNode = parent.get(endTile);
+           Node toNode = endTile;
            result.add(new Edge(fromNode, toNode, graph.distance(fromNode, toNode)));
-           endTile = new Node(fromNode.getData());
+           endTile = fromNode;
        }
 
        for(Edge edge: result){
