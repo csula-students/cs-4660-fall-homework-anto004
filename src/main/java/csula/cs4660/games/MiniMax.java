@@ -11,22 +11,22 @@ import java.util.*;
 
 public class MiniMax {
     private static Integer bestValue;
-    private static Integer value;
+    private static Integer index;
 
     public static Node getBestMove(Graph graph, Node root, Integer depth, Boolean max) {
 
-        Integer value = minimax(graph, root, depth, max);
+        Node node = minimax(graph, root, depth, max);
 
-        MiniMaxState miniMaxState = (MiniMaxState) root.getData();
-        System.out.println(miniMaxState.getValue());
-        return new Node<>(new MiniMaxState(miniMaxState.getIndex(), value));
+        MiniMaxState miniMaxState = (MiniMaxState) node.getData();
+        System.out.println(miniMaxState.getIndex()+ " "+ miniMaxState.getValue());
+        return new Node<>(new MiniMaxState(miniMaxState.getIndex(), miniMaxState.getValue()));
     }
 
-    public static Integer minimax(Graph graph, Node startingNode, Integer depth, Boolean max) {
+    public static Node minimax(Graph graph, Node startingNode, Integer depth, Boolean max) {
         MiniMaxState miniMaxState = (MiniMaxState) startingNode.getData();
 
         if (depth == 0 || graph.neighbors(startingNode).isEmpty()) {
-            return evaluate(startingNode);
+            return startingNode;
         }
         if (max) {
             //bestValue = Integer.MAX_VALUE;
@@ -41,7 +41,11 @@ public class MiniMax {
                 System.out.println(" MAX Starting Node: Index " + mmsStartingNode.getIndex() + " value" + mmsStartingNode.getValue());
                 MiniMaxState mmsTest = (MiniMaxState) node.getData();
                 System.out.println("Checking Child Node: Index " + mmsTest.getIndex() + " value" + mmsTest.getValue());
-                value = minimax(graph, node, depth - 1, false);
+                Node minimaxNode = minimax(graph, node, depth - 1, false);
+
+                MiniMaxState mmsMiniMaxNode = (MiniMaxState) minimaxNode.getData();
+                index = mmsMiniMaxNode.getIndex();
+                Integer value = mmsMiniMaxNode.getValue();
 
                 if ((mmsStartingNodeValue == 0) || (value > mmsStartingNodeValue)) {
                     graph = reconstructGraph(graph, startingNode, value);
@@ -55,11 +59,12 @@ public class MiniMax {
                 startingNode = new Node<>(mms);
                 System.out.println(" After Checking Startin Node: Node " + mms.getIndex() + " " + mms.getValue());
             }
-            System.out.println("Max Best Value " + bestValue);
+            System.out.println("Max Best Value " + bestValue + " index "+ index);
 
             System.out.println("--- End of Max");
 
-            return bestValue;
+            Node bestValueNode = new Node<>(new MiniMaxState(index, bestValue));
+            return bestValueNode;
         } else {
             //bestValue = Integer.MIN_VALUE;
 
@@ -74,7 +79,12 @@ public class MiniMax {
                 MiniMaxState mmsTest = (MiniMaxState) node.getData();
                 System.out.println(" MIN Checking Child Node: Index " + mmsTest.getIndex() + " value" + mmsTest.getValue());
 
-                value = minimax(graph, node, depth - 1, true);
+                Node miniMaxNode = minimax(graph, node, depth - 1, true);
+
+
+                MiniMaxState mmsMiniMaxNode = (MiniMaxState) miniMaxNode.getData();
+                index = mmsMiniMaxNode.getIndex();
+                Integer value = mmsMiniMaxNode.getValue();
                 System.out.println("VALUE: " + value);
 
                 if (mmsStartingNodeValue == 0) {
@@ -92,11 +102,12 @@ public class MiniMax {
                 startingNode = new Node<>(mms);
                 System.out.println("After MIN Checking Node :" + mms.getIndex() + " " + mms.getValue());
             }
-            System.out.println("Min Best Value " + bestValue);
+            System.out.println("Max Best Value " + bestValue + " index "+ index);
 
             System.out.println("--- End of Min");
         }
-        return bestValue;
+        Node bestValueNode = new Node<>(new MiniMaxState(index, bestValue));
+        return bestValueNode;
     }
 
     private static Graph reconstructGraph(Graph graph, Node startingNode, Integer value) {
