@@ -31,6 +31,7 @@ public class DijkstraSearch implements SearchStrategy {
         while(!queue.isEmpty()){
             Node u = queue.poll();
             System.out.println("Node at queue.poll()"+ u);
+            //You might have to check for goal at this point (cut off point at the beginning)
             for(Node node: graph.neighbors(u)){
                 if(!exploredMap.containsValue(node)){
                     node.setDistance(Integer.MAX_VALUE);
