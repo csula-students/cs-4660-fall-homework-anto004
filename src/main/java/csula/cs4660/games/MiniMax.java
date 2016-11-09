@@ -55,6 +55,7 @@ public class MiniMax {
 
                 Optional<Node> nodeTest = graph.getNode(startingNode);
                 Node nodeTemp = nodeTest.get();
+                // startingNode gets resetted so we save it
                 MiniMaxState mms = (MiniMaxState) nodeTemp.getData();
                 startingNode = new Node<>(mms);
                 System.out.println(" After Checking Startin Node: Node " + mms.getIndex() + " " + mms.getValue());
