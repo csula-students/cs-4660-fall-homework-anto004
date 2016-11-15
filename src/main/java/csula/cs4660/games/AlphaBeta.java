@@ -1,67 +1,158 @@
 package csula.cs4660.games;
 
+import com.google.common.collect.Lists;
 import csula.cs4660.games.models.MiniMaxState;
 import csula.cs4660.graphs.Edge;
 import csula.cs4660.graphs.Graph;
 import csula.cs4660.graphs.Node;
 import csula.cs4660.graphs.representations.Representation;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class AlphaBeta {
     private static Integer index;
-    private static Integer bestValue;
+    private static Integer copyAlpha;
+    private static Integer copyBeta;
+    private static Node best;
     public static Node getBestMove(Graph graph, Node source, Integer depth, Integer alpha, Integer beta, Boolean max) {
-        // TODO: implement your alpha beta pruning algorithm here
-        Node node = alphabeta(graph, source, depth, alpha, beta);
+
+        Optional<Node> copySource = graph.getNode(source);
+        Node copySourceNode = copySource.get();
+        // startingNode gets resetted so we re-assign it
+
+        Node node = alphabeta(graph, copySourceNode, depth, alpha, beta, max);
 
         MiniMaxState miniMaxState = (MiniMaxState)node.getData();
-        System.out.println("Get Best Move Index-"+miniMaxState.getIndex()+" Value- "+ miniMaxState.getValue());
+        System.out.println("Get Best Move Index: "+miniMaxState.getIndex()+" Value "+ miniMaxState.getValue());
 
         return null;
     }
 
-    public static Node alphabeta(Graph graph, Node source, Integer depth, Integer alpha, Integer beta){
-        if(depth == 0 || graph.neighbors(source).isEmpty()){
+    public static Node alphabeta(Graph graph, Node source, Integer depth, Integer alpha, Integer beta, Boolean max) {
+        if (depth == 0 || graph.neighbors(source).isEmpty()) {
             return source;
         }
-        Node best;
+
         List<Node> nodes = graph.neighbors(source);
-        Iterator<Node> iterator = nodes.listIterator();
-        while(iterator.hasNext()){
-            Node sourceNode = iterator.next();
-            MiniMaxState snMiniMaxState = (MiniMaxState)sourceNode.getData();
+        for (Node node : nodes) {
+            //Source Node
+            MiniMaxState snMiniMaxState = (MiniMaxState) source.getData();
+            Integer snIndex = snMiniMaxState.getIndex();
             Integer snValue = snMiniMaxState.getValue();
+            System.out.println("source Node Index: " + snIndex + " Value: " + snValue);
+            //current Node
+            MiniMaxState miniMaxState = (MiniMaxState) node.getData();
+            index = miniMaxState.getIndex();
+            Integer value = miniMaxState.getValue();
+            System.out.println("current Node Index: " + miniMaxState.getIndex() + " value:" + miniMaxState.getValue());
 
-            Node alphabetaNode = alphabeta(graph, sourceNode, depth - 1, -beta, -alpha);
+            if (max) {
+                //alpha = Integer.max(alpha, beta);
+                Node alphabetaNode = alphabeta(graph, node, depth - 1, -beta, -alpha, false);
+                //alphabeta Returned Node
+                System.out.println(" MAX ");
+                MiniMaxState abNodeMiniMaxState = (MiniMaxState) alphabetaNode.getData();
+                Integer abNodeIndex = abNodeMiniMaxState.getIndex();
+                Integer abNodeValue = abNodeMiniMaxState.getValue();
+                System.out.println("alphabetaNode Returned: index: " + abNodeIndex + " value: " + abNodeValue);
 
-            MiniMaxState abNodeMiniMaxState = (MiniMaxState)alphabetaNode.getData();
-            index = abNodeMiniMaxState.getIndex();
-            Integer abNodeValue = abNodeMiniMaxState.getValue();
+                if(copyAlpha != null && copyBeta != null)
+                if(alpha.equals(Integer.MAX_VALUE) || alpha.equals(Integer.MIN_VALUE) || copyAlpha > alpha ){
+                    alpha = Integer.max(copyAlpha, copyBeta);
+                }
 
-
-            if(-abNodeValue > alpha){
-                alpha = -abNodeValue;
-                bestValue = alpha;
-                graph = reconstructGraph(graph, source, alpha);
+                System.out.println("alpha before setting: " + alpha + " beta is "+beta);
+                System.out.println("copyAlpha: " + copyAlpha + " copybeta:" + copyBeta);
+                if (-abNodeValue > alpha) {
+                    alpha = -abNodeValue;
+                    copyAlpha = alpha;
+                    copyBeta = beta;
+                    graph = reconstructGraph(graph, source, alpha);
+                    System.out.println("alpha: " + alpha + " beta:" + beta);
+                    System.out.println("copyAlpha: " + copyAlpha + " copybeta:" + copyBeta);
+                }
+                System.out.println("alpha after setting: " + alpha);
+                best = new Node<>(new MiniMaxState(index, copyAlpha));
+                //pruning
+                if (alpha > beta) {
+                    System.out.println("pruned");
+                    return best;
+                }
             }
-            best = new Node<>(new MiniMaxState(index, abNodeValue));
-            if (alpha > beta){
-                return best;
+            else {
+                Node alphabetaNode = alphabeta(graph, node, depth - 1, -beta, -alpha, true);
+                System.out.println(" MIN ");
+                //alphabeta Returned Node
+                MiniMaxState abNodeMiniMaxState = (MiniMaxState) alphabetaNode.getData();
+                Integer abNodeIndex = abNodeMiniMaxState.getIndex();
+                Integer abNodeValue = abNodeMiniMaxState.getValue();
+                System.out.println("alphabetaNode Returned: index: " + abNodeIndex + " value: " + abNodeValue);
+
+                if(copyAlpha != null && copyBeta != null)
+                if(beta.equals(Integer.MAX_VALUE) || beta.equals(Integer.MIN_VALUE) || copyBeta < beta ){
+                    //beta = Integer.min(copyAlpha, copyBeta);
+                    //alpha = copyAlpha;
+                    beta = abNodeValue;
+                }
+
+                System.out.println("alpha before setting: " + alpha + " beta is "+beta);
+                System.out.println("copyAlpha: " + copyAlpha + " copybeta:" + copyBeta);
+                if (-abNodeValue > alpha) {
+                    alpha = -abNodeValue;
+                    copyAlpha = alpha;
+                    copyBeta = -alpha;
+                    graph = reconstructGraph(graph, source, copyBeta);
+                    System.out.println("alpha: " + alpha + " beta:" + beta);
+                }
+                best = new Node<>(new MiniMaxState(index, copyAlpha));
+                //pruning
+                if (alpha > beta) {
+                    System.out.println("pruned");
+                    return best;
+                }
             }
+            debugGraph(graph, source);
         }
-        return new Node<>(new MiniMaxState(index, bestValue));
+        return best;
     }
 
     public static Graph reconstructGraph(Graph graph, Node node, Integer value){
         MiniMaxState miniMaxState = (MiniMaxState) node.getData();
         Integer index = miniMaxState.getIndex();
-
+        System.out.println("Reconstruct index "+index +" with value "+ value);
         graph.removeNode(node);
         graph.addNode(new Node<>(new MiniMaxState(index, value)));
 
         return graph;
+    }
+
+    public static void debugGraph(Graph graph, Node source){
+        System.out.println(" DEBUG ");
+        Queue queue = new LinkedList<Node>();
+
+        //used explored set instead of initializing to MAX value
+        List<Node> exploredSet = Lists.newArrayList();
+        List<Edge> result = new ArrayList<>();
+
+        queue.add(source);
+        exploredSet.add(source);
+
+        while(!queue.isEmpty()){
+            Node u = (Node)queue.poll();
+            for(Node node: graph.neighbors(u)){
+                if(!exploredSet.contains(node)){
+                    queue.add(node);
+                    exploredSet.add(node);
+                }
+            }
+        }
+
+        for(Node node: exploredSet){
+            MiniMaxState miniMaxState = (MiniMaxState) node.getData();
+            System.out.println("Nodes index "+miniMaxState.getIndex() +" value "+miniMaxState.getValue());
+        }
+
+        System.out.println(" END OF DEBUG ");
     }
 
     public static void main(String [] args){

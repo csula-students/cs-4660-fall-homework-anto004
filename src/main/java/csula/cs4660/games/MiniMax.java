@@ -14,7 +14,7 @@ public class MiniMax {
     private static Integer index;
 
     public static Node getBestMove(Graph graph, Node root, Integer depth, Boolean max) {
-
+        //root node is not a node part of the graph, it has a different memory reference
         Node node = minimax(graph, root, depth, max);
 
         MiniMaxState miniMaxState = (MiniMaxState) node.getData();
@@ -55,7 +55,7 @@ public class MiniMax {
 
                 Optional<Node> nodeTest = graph.getNode(startingNode);
                 Node nodeTemp = nodeTest.get();
-                // startingNode gets resetted so we save it
+                // startingNode gets resetted so we re-assign it
                 MiniMaxState mms = (MiniMaxState) nodeTemp.getData();
                 startingNode = new Node<>(mms);
                 System.out.println(" After Checking Startin Node: Node " + mms.getIndex() + " " + mms.getValue());
@@ -70,7 +70,7 @@ public class MiniMax {
             //bestValue = Integer.MIN_VALUE;
 
             List<Node> nodes = graph.neighbors(startingNode);
-            ListIterator<Node> iterator = nodes.listIterator();
+           // ListIterator<Node> iterator = nodes.listIterator();
 
             for (Node node : nodes) {
                 MiniMaxState mmsStartingNode = (MiniMaxState) startingNode.getData();
@@ -106,9 +106,10 @@ public class MiniMax {
             System.out.println("Max Best Value " + bestValue + " index "+ index);
 
             System.out.println("--- End of Min");
+            Node bestValueNode = new Node<>(new MiniMaxState(index, bestValue));
+            return bestValueNode;
         }
-        Node bestValueNode = new Node<>(new MiniMaxState(index, bestValue));
-        return bestValueNode;
+
     }
 
     private static Graph reconstructGraph(Graph graph, Node startingNode, Integer value) {
