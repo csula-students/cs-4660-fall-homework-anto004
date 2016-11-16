@@ -11,9 +11,9 @@ import java.util.*;
 
 public class AlphaBeta {
     private static Integer index;
-    private static Integer copyAlpha;
-    private static Integer copyBeta;
-    private static Node best;
+    private static Integer copyAlpha = Integer.MIN_VALUE;
+    private static Integer copyBeta = Integer.MAX_VALUE;
+    private static Integer bestValue;
     public static Node getBestMove(Graph graph, Node source, Integer depth, Integer alpha, Integer beta, Boolean max) {
 
         Optional<Node> copySource = graph.getNode(source);
@@ -25,95 +25,117 @@ public class AlphaBeta {
         MiniMaxState miniMaxState = (MiniMaxState)node.getData();
         System.out.println("Get Best Move Index: "+miniMaxState.getIndex()+" Value "+ miniMaxState.getValue());
 
-        return null;
+        return node;
     }
 
-    public static Node alphabeta(Graph graph, Node source, Integer depth, Integer alpha, Integer beta, Boolean max) {
-        if (depth == 0 || graph.neighbors(source).isEmpty()) {
-            return source;
+    public static Node alphabeta(Graph graph, Node startingNode, Integer depth, Integer alpha, Integer beta, Boolean max) {
+
+        if (depth == 0 || graph.neighbors(startingNode).isEmpty()) {
+            return startingNode;
         }
+        if (max) {
+            //bestValue = Integer.MAX_VALUE;
 
-        List<Node> nodes = graph.neighbors(source);
-        for (Node node : nodes) {
-            //Source Node
-            MiniMaxState snMiniMaxState = (MiniMaxState) source.getData();
-            Integer snIndex = snMiniMaxState.getIndex();
-            Integer snValue = snMiniMaxState.getValue();
-            System.out.println("source Node Index: " + snIndex + " Value: " + snValue);
-            //current Node
-            MiniMaxState miniMaxState = (MiniMaxState) node.getData();
-            index = miniMaxState.getIndex();
-            Integer value = miniMaxState.getValue();
-            System.out.println("current Node Index: " + miniMaxState.getIndex() + " value:" + miniMaxState.getValue());
+            List<Node> nodes = graph.neighbors(startingNode);
+            ListIterator<Node> iterator = nodes.listIterator();
 
-            if (max) {
-                //alpha = Integer.max(alpha, beta);
-                Node alphabetaNode = alphabeta(graph, node, depth - 1, -beta, -alpha, false);
-                //alphabeta Returned Node
-                System.out.println(" MAX ");
-                MiniMaxState abNodeMiniMaxState = (MiniMaxState) alphabetaNode.getData();
-                Integer abNodeIndex = abNodeMiniMaxState.getIndex();
-                Integer abNodeValue = abNodeMiniMaxState.getValue();
-                System.out.println("alphabetaNode Returned: index: " + abNodeIndex + " value: " + abNodeValue);
+            while (iterator.hasNext()) {
+                Node node = iterator.next();
+                MiniMaxState mmsStartingNode = (MiniMaxState) startingNode.getData();
+                Integer mmsStartingNodeValue = mmsStartingNode.getValue();
+                System.out.println(" MAX Starting Node: Index " + mmsStartingNode.getIndex() + " value" + mmsStartingNode.getValue());
+                MiniMaxState mmsTest = (MiniMaxState) node.getData();
+                System.out.println("Checking Child Node: Index " + mmsTest.getIndex() + " value" + mmsTest.getValue());
+                Node minimaxNode = alphabeta(graph, node, depth - 1, alpha, beta, false);
 
-                if(copyAlpha != null && copyBeta != null)
-                if(alpha.equals(Integer.MAX_VALUE) || alpha.equals(Integer.MIN_VALUE) || copyAlpha > alpha ){
-                    alpha = Integer.max(copyAlpha, copyBeta);
+                MiniMaxState mmsMiniMaxNode = (MiniMaxState) minimaxNode.getData();
+                Integer miniMaxNodeValue = mmsMiniMaxNode.getValue();
+
+                //beta = copyBeta;
+                System.out.println("Beta value: "+beta);
+                System.out.println("Alpha Value at MAX condition: "+alpha +" for starting Node "+mmsStartingNode.getIndex());
+                System.out.println("Starting Node value: "+mmsStartingNodeValue);
+                if ((mmsStartingNodeValue == 0) || (miniMaxNodeValue > alpha)) {
+                    alpha = miniMaxNodeValue;
+                    copyAlpha = alpha;
+                    //this is max so beta remains beta
+                    // to get the right index, if the node satisfies the condition
+                    // try with index = mmsStartingNode.getIndex
+                    index = mmsMiniMaxNode.getIndex();
+                    graph = reconstructGraph(graph, startingNode, miniMaxNodeValue);
+                }
+                System.out.println("Alpha value after, at MAX condition"+alpha);
+                System.out.println("Beta value after, at MAX condition"+beta);
+                bestValue = Integer.min(alpha, beta);
+                if(alpha >= beta){
+                    System.out.println("pruned at "+ mmsTest.getIndex());
+                    return new Node<>(new MiniMaxState(index, bestValue));
                 }
 
-                System.out.println("alpha before setting: " + alpha + " beta is "+beta);
-                System.out.println("copyAlpha: " + copyAlpha + " copybeta:" + copyBeta);
-                if (-abNodeValue > alpha) {
-                    alpha = -abNodeValue;
-                    copyAlpha = alpha;
+                Optional<Node> nodeTest = graph.getNode(startingNode);
+                Node nodeTemp = nodeTest.get();
+                // startingNode gets resetted so we re-assign it
+                MiniMaxState mms = (MiniMaxState) nodeTemp.getData();
+                startingNode = new Node<>(mms);
+                System.out.println(" After Checking Startin Node: Node " + mms.getIndex() + " " + mms.getValue());
+            }
+            System.out.println("Max Best Value " + bestValue + " index "+ index);
+
+            System.out.println("--- End of Max");
+
+            Node bestValueNode = new Node<>(new MiniMaxState(index, bestValue));
+            return bestValueNode;
+        } else {
+            //bestValue = Integer.MIN_VALUE;
+
+            List<Node> nodes = graph.neighbors(startingNode);
+            // ListIterator<Node> iterator = nodes.listIterator();
+
+            for (Node node : nodes) {
+                MiniMaxState mmsStartingNode = (MiniMaxState) startingNode.getData();
+                Integer mmsStartingNodeValue = mmsStartingNode.getValue();
+                System.out.println(" MIN Starting Node: Index " + mmsStartingNode.getIndex() + " value" + mmsStartingNode.getValue());
+
+                MiniMaxState mmsTest = (MiniMaxState) node.getData();
+                System.out.println(" MIN Checking Child Node: Index " + mmsTest.getIndex() + " value" + mmsTest.getValue());
+
+                Node miniMaxNode = alphabeta(graph, node, depth - 1, alpha, beta, true);
+
+                MiniMaxState mmsMiniMaxNode = (MiniMaxState) miniMaxNode.getData();
+                Integer miniMaxNodeValue = mmsMiniMaxNode.getValue();
+
+                //alpha = copyAlpha;
+
+                System.out.println("alpha value: " + alpha);
+                System.out.println("Beta Value at MIN condition: "+beta +" for starting Node "+mmsStartingNode.getIndex());
+                if ((mmsStartingNodeValue == 0) || (miniMaxNodeValue < beta)) {
+                    beta = miniMaxNodeValue;
                     copyBeta = beta;
-                    graph = reconstructGraph(graph, source, alpha);
-                    System.out.println("alpha: " + alpha + " beta:" + beta);
-                    System.out.println("copyAlpha: " + copyAlpha + " copybeta:" + copyBeta);
+                    // to get the right index, if the node satisfies the condition
+                    index = mmsMiniMaxNode.getIndex();
+                    graph = reconstructGraph(graph, startingNode, miniMaxNodeValue);
                 }
-                System.out.println("alpha after setting: " + alpha);
-                best = new Node<>(new MiniMaxState(index, copyAlpha));
-                //pruning
-                if (alpha > beta) {
-                    System.out.println("pruned");
-                    return best;
-                }
-            }
-            else {
-                Node alphabetaNode = alphabeta(graph, node, depth - 1, -beta, -alpha, true);
-                System.out.println(" MIN ");
-                //alphabeta Returned Node
-                MiniMaxState abNodeMiniMaxState = (MiniMaxState) alphabetaNode.getData();
-                Integer abNodeIndex = abNodeMiniMaxState.getIndex();
-                Integer abNodeValue = abNodeMiniMaxState.getValue();
-                System.out.println("alphabetaNode Returned: index: " + abNodeIndex + " value: " + abNodeValue);
+                System.out.println("Beta value after, at MIN condition"+beta);
 
-                if(copyAlpha != null && copyBeta != null)
-                if(beta.equals(Integer.MAX_VALUE) || beta.equals(Integer.MIN_VALUE) || copyBeta < beta ){
-                    //beta = Integer.min(copyAlpha, copyBeta);
-                    //alpha = copyAlpha;
-                    beta = abNodeValue;
+                bestValue = Integer.max(alpha, beta);
+                if(alpha >= beta){
+                    System.out.println("pruned at "+ mmsTest.getIndex());
+                    return new Node<>(new MiniMaxState(index, miniMaxNodeValue));
                 }
 
-                System.out.println("alpha before setting: " + alpha + " beta is "+beta);
-                System.out.println("copyAlpha: " + copyAlpha + " copybeta:" + copyBeta);
-                if (-abNodeValue > alpha) {
-                    alpha = -abNodeValue;
-                    copyAlpha = alpha;
-                    copyBeta = -alpha;
-                    graph = reconstructGraph(graph, source, copyBeta);
-                    System.out.println("alpha: " + alpha + " beta:" + beta);
-                }
-                best = new Node<>(new MiniMaxState(index, copyAlpha));
-                //pruning
-                if (alpha > beta) {
-                    System.out.println("pruned");
-                    return best;
-                }
+                Optional<Node> nodeTest = graph.getNode(startingNode);
+                Node nodeTemp = nodeTest.get();
+                MiniMaxState mms = (MiniMaxState) nodeTemp.getData();
+                startingNode = new Node<>(mms);
+                System.out.println("After MIN Checking Node :" + mms.getIndex() + " " + mms.getValue());
             }
-            debugGraph(graph, source);
+            System.out.println("Max Best Value " + bestValue + " index "+ index);
+
+            System.out.println("--- End of Min");
+            Node bestValueNode = new Node<>(new MiniMaxState(index, bestValue));
+            return bestValueNode;
         }
-        return best;
+
     }
 
     public static Graph reconstructGraph(Graph graph, Node node, Integer value){
