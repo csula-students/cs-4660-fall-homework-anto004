@@ -133,7 +133,6 @@ public class AdjacencyMatrix implements Representation {
             adjacencyMatrix[row][column] = 0;
             adjacencyMatrix[column][row] = 0;
         }
-        System.out.println("Removed Node:"+x);
 
         return true;
     }

@@ -38,10 +38,10 @@ public class DijkstraSearch implements SearchStrategy {
                     node = exploredMap.get(node); // A new node object is constructed so you need the old value.
                 }
                 int alt = u.getDistance() + graph.distance(u, node);
-                System.out.println("value of alt:" +alt+": value of "+node+" :"+node.getDistance());
+               // System.out.println("value of alt:" +alt+": value of "+node+" :"+node.getDistance());
                 if(alt < node.getDistance()){
                     node.setDistance(alt);
-                    System.out.println(node+"is being set distance"+node.getDistance());
+                 //   System.out.println(node+"is being set distance"+node.getDistance());
                     parent.put(node, u);
                     queue.add(node);
                 }
@@ -49,7 +49,7 @@ public class DijkstraSearch implements SearchStrategy {
                 if((node.equals(dest)) && (node.getDistance() < endTile.getDistance())){
                     endTile = new Node(node.getData());
                     endTile.setDistance(node.getDistance());
-                    System.out.println("Found Goal"+endTile+"-Distance:"+endTile.getDistance());
+                  //  System.out.println("Found Goal"+endTile+"-Distance:"+endTile.getDistance());
                 }
                 //set doesn't add new duplicates
                 //you want the duplicates with the least distance
@@ -58,15 +58,6 @@ public class DijkstraSearch implements SearchStrategy {
             }
         }
 
-        for(Node node: exploredMap.keySet())
-            System.out.println(node+"-Distance Values:"+ exploredMap.get(node).getDistance());
-
-        for(Node node: exploredMap.keySet()){
-            System.out.println("Explored Node-"+exploredMap.get(node));
-        }
-        for(Node node: parent.keySet()){
-            System.out.println("Parent of "+ node + "is:"+ parent.get(node));
-        }
 
         while(parent.get(endTile) != null){
             Node fromNode = new Node(parent.get(endTile).getData());
@@ -75,17 +66,12 @@ public class DijkstraSearch implements SearchStrategy {
             endTile = new Node(fromNode.getData());
         }
 
-        for(Edge edge: result){
-            System.out.println("Dijkstras Result list:"+ edge);
-        }
 
         List<Edge> reverseList = Lists.newArrayList();
         for(ListIterator<Edge> iterator = result.listIterator(result.size()); iterator.hasPrevious();){
             reverseList.add(iterator.previous());
         }
-        for(Edge edge: reverseList){
-            System.out.println("Reversed list"+edge);
-        }
+
         return reverseList;
     }
 }
