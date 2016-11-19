@@ -41,12 +41,6 @@ public class BFS implements SearchStrategy {
             }
         }
 
-        for(Node node: exploredSet){
-            System.out.println("Explored Node-"+node);
-        }
-        for(Node node: parent.keySet()){
-            System.out.println("Parent of "+ node + "is:"+ parent.get(node));
-        }
 
        while(parent.get(endTile) != null){
            Node fromNode = parent.get(endTile);
@@ -55,16 +49,10 @@ public class BFS implements SearchStrategy {
            endTile = fromNode;
        }
 
-       for(Edge edge: result){
-           System.out.println("BFS Result list:"+ edge);
-       }
 
        List<Edge> reverseList = Lists.newArrayList();
        for(ListIterator<Edge> iterator = result.listIterator(result.size()); iterator.hasPrevious();){
            reverseList.add(iterator.previous());
-       }
-       for(Edge edge: reverseList){
-           System.out.println("Reversed list"+edge);
        }
 
        return reverseList;

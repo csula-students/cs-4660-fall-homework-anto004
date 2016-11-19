@@ -87,11 +87,6 @@ public class Parser {
             edges.add(new Edge(fromNode, toNode, 1));
         }
 
-        System.out.println(edges);
-//        System.out.println("Neighbor of"+tile.getX()+" "+tile.getY());
-//        for (Edge edge: edges){
-//            System.out.println("edge: "+edge);
-//        }
         return edges;
     }
 
@@ -99,7 +94,7 @@ public class Parser {
         int rowSize = lines.size();
         int colSize = lines.get(1).length()/2;
         Tile[][] gridMatrix = new Tile[rowSize][colSize];
-        System.out.println(gridMatrix.length + " " + colSize);
+       // System.out.println(gridMatrix.length + " " + colSize);
         StringBuilder stringType = new StringBuilder();
         for (int row = 0; row < rowSize; row++) {
             // look at two char at a time from the current string
