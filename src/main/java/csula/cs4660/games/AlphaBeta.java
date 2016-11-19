@@ -1,11 +1,8 @@
 package csula.cs4660.games;
 
-import com.google.common.collect.Lists;
 import csula.cs4660.games.models.MiniMaxState;
-import csula.cs4660.graphs.Edge;
 import csula.cs4660.graphs.Graph;
 import csula.cs4660.graphs.Node;
-import csula.cs4660.graphs.representations.Representation;
 
 import java.util.*;
 
@@ -16,7 +13,6 @@ public class AlphaBeta {
     public static Node getBestMove(Graph graph, Node source, Integer depth, Integer alpha, Integer beta, Boolean max) {
 
         Node node = alphabeta(graph, source, depth, alpha, beta, max);
-
         return node;
     }
 
@@ -27,7 +23,6 @@ public class AlphaBeta {
         }
         if (max) {
             //bestValue = Integer.MAX_VALUE;
-
             List<Node> nodes = graph.neighbors(startingNode);
 
             for(Node node: nodes){
@@ -60,7 +55,6 @@ public class AlphaBeta {
             return new Node<>(new MiniMaxState(index, bestValue));
         } else {
             //bestValue = Integer.MIN_VALUE;
-
             List<Node> nodes = graph.neighbors(startingNode);
 
             for (Node node : nodes) {

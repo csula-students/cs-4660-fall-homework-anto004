@@ -1,6 +1,5 @@
 package csula.cs4660.graphs.searches;
 
-import com.apple.concurrent.Dispatch;
 import com.google.common.collect.Lists;
 import csula.cs4660.graphs.Edge;
 import csula.cs4660.graphs.Graph;
@@ -15,7 +14,6 @@ public class DijkstraSearch implements SearchStrategy {
     Node endTile = new Node(Integer.MAX_VALUE);
     @Override
     public List<Edge> search(Graph graph, Node source, Node dest) {
-
         System.out.println("Dijkstras Search:");
 
         Queue<Node> queue = new PriorityQueue<>(11, new MyCompare());
