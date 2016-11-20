@@ -22,7 +22,6 @@ public class AlphaBeta {
             return startingNode;
         }
         if (max) {
-            //bestValue = Integer.MAX_VALUE;
             List<Node> nodes = graph.neighbors(startingNode);
 
             for(Node node: nodes){
@@ -41,7 +40,6 @@ public class AlphaBeta {
                 }
 
                 bestValue = Integer.min(alpha, beta);
-
                 if(alpha >= beta){
                     return new Node<>(new MiniMaxState(index, bestValue));
                 }
@@ -53,8 +51,8 @@ public class AlphaBeta {
                 startingNode = new Node<>(mms);
             }
             return new Node<>(new MiniMaxState(index, bestValue));
-        } else {
-            //bestValue = Integer.MIN_VALUE;
+        }
+        else {
             List<Node> nodes = graph.neighbors(startingNode);
 
             for (Node node : nodes) {
@@ -96,7 +94,5 @@ public class AlphaBeta {
 
         return graph;
     }
-
-
 
 }

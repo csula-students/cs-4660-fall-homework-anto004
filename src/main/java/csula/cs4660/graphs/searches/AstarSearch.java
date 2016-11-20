@@ -1,14 +1,23 @@
 package csula.cs4660.graphs.searches;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import csula.cs4660.games.models.Tile;
 import csula.cs4660.graphs.Edge;
 import csula.cs4660.graphs.Graph;
 import csula.cs4660.graphs.Node;
+import csula.cs4660.graphs.representations.Representation;
+import csula.cs4660.graphs.utils.Parser;
 
+import java.io.File;
 import java.util.*;
-
+import java.util.concurrent.TimeUnit;
 public class AstarSearch implements SearchStrategy {
+    private static ClassLoader classLoader;
+    private static Graph[] graph1s;
+
+    Stopwatch stopwatch = Stopwatch.createStarted();
+
     Node u = new Node(Integer.MAX_VALUE);
     @Override
     public List<Edge> search(Graph graph, Node source, Node dist) {
@@ -61,16 +70,8 @@ public class AstarSearch implements SearchStrategy {
             // pop with the lowest fscore
             Node u = frontier.poll();
             Tile uTile = (Tile)u.getData();
-           // System.out.println("frontier.poll():" + uTile.getX() +" "+uTile.getY());
             if (u.equals(dist)) {
-                System.out.println("found goal");
-
                 List<Edge> result = Lists.newArrayList();
-               // List<Edge> reverseList = Lists.newArrayList();
-
-//                for (Node node : parents.keySet()) {
-//                    System.out.println("Parent of " + node + "is:" + parents.get(node));
-//                }
 
                 while (!parents.get(dist).equals(dist)) {
                     result.add(new Edge(parents.get(dist), u, 1));
@@ -79,29 +80,23 @@ public class AstarSearch implements SearchStrategy {
 //                for (ListIterator<Edge> iterator = result.listIterator(result.size()); iterator.hasPrevious(); ) {
 //                    reverseList.add(iterator.previous());
 //                }
+                //stopwatch.stop();
+                System.out.println("A star time taken is:" + stopwatch.stop());
                 return result;
-
-
-                //return constructPath(graph, u, parents, dist);
             }
             exploredMap.put(u, u);
 
             for (Node node : graph.neighbors(u)) {
-              //  System.out.println("Neighbor of " + u + " is " + node);
                 if (exploredMap.containsValue(node)) {
-                   // System.out.println("Explored map already contains" + exploredMap.get(node));
                     continue;
                 }
 
                 int tempGScore = gscore.get(u) + 1;
-//                System.out.println("tempGScore=" + tempGScore);
-//                System.out.println("gscore.get(node):"+gscore.get(node));
 
                 if (!gscore.containsKey(node) || tempGScore < gscore.get(node)) {
                     gscore.put(node, tempGScore);
                     parents.put(node, u);
                     fscore.put(node, gscore.get(node) + heuristicCost(node, dist));
-                    //System.out.println(node + "gscore is" + gscore.get(tempGScore));
                 }
 
                 if (!frontier.contains(node)) {
@@ -109,7 +104,10 @@ public class AstarSearch implements SearchStrategy {
                 }
             }
         }
-
+        stopwatch.stop();
+        long milis = stopwatch.elapsed(TimeUnit.MILLISECONDS);
+        System.out.println("A star time taken is:" + stopwatch);
+        System.out.println("A star time milis: " + milis);
         return new ArrayList<>();
     }
 
@@ -139,5 +137,33 @@ public class AstarSearch implements SearchStrategy {
     private boolean isEast(Node src, Node goal) {
         return ((Tile) src.getData()).getX() < ((Tile) goal.getData()).getX();
     }
+
+    public static void main(){
+        File file1 = new File(classLoader.getResource("homework-2/grid-1.txt").getFile());
+
+        graph1s = buildGraphs(file1);
+    }
+
+    private static Graph[] buildGraphs(File file) {
+        Graph[] graphs = new Graph[3];
+
+        graphs[0] = Parser.readRectangularGridFile(
+                Representation.STRATEGY.ADJACENCY_LIST,
+                file
+        );
+
+        graphs[1] = Parser.readRectangularGridFile(
+                Representation.STRATEGY.ADJACENCY_MATRIX,
+                file
+        );
+
+        graphs[2] = Parser.readRectangularGridFile(
+                Representation.STRATEGY.OBJECT_ORIENTED,
+                file
+        );
+
+        return graphs;
+    }
+
 }
 

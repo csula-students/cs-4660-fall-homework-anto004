@@ -1,5 +1,6 @@
 package csula.cs4660.graphs.utils;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.ArrayTable;
 import com.google.common.collect.Lists;
 import csula.cs4660.games.models.Tile;
@@ -22,6 +23,8 @@ public class Parser {
 
 
     public static Graph readRectangularGridFile(Representation.STRATEGY graphRepresentation, File file) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
         Graph graph = new Graph(Representation.of(graphRepresentation));
         System.out.println("readRectangularGridFile");
 
@@ -32,7 +35,7 @@ public class Parser {
             List<String> newLines = removeBorders(lines);
             Tile gridMatrix[][] = readLinesToMatrix(newLines);
 
-            gridMatrixDebug(gridMatrix);
+            //gridMatrixDebug(gridMatrix);
 
             for (Tile[] tileArray : gridMatrix) {
                 for (Tile tile : tileArray) {
@@ -55,7 +58,7 @@ public class Parser {
 //        Node node = new Node<Tile>(new Tile(3, 0, "@1"));
 //        System.out.println("neighbor of Tile 3,0" + graph.neighbors(node));
 
-
+        System.out.println("ReadRectangularGridFile takes time: "+stopwatch.stop());
         return graph;
     }
 
@@ -111,20 +114,20 @@ public class Parser {
         return gridMatrix;
     }
 
-    private static void gridMatrixDebug(Tile[][] gridMatrix) {
-        System.out.print("  ");
-
-        for (int row = 0; row < gridMatrix.length; row++) {
-           // System.out.print((row) + " ");
-            for (int col = 0; col < gridMatrix[0].length; col++) {
-//                if(gridMatrix[row][col] != null)
-//                    System.out.print(gridMatrix[row][col].getType()+ " ");
-                //System.out.println("col "+col);
-                System.out.print(gridMatrix[row][col].getType());
-            }
-            System.out.println();
-        }
-    }
+//    private static void gridMatrixDebug(Tile[][] gridMatrix) {
+//        System.out.print("  ");
+//
+//        for (int row = 0; row < gridMatrix.length; row++) {
+//           // System.out.print((row) + " ");
+//            for (int col = 0; col < gridMatrix[0].length; col++) {
+////                if(gridMatrix[row][col] != null)
+////                    System.out.print(gridMatrix[row][col].getType()+ " ");
+//                //System.out.println("col "+col);
+//                System.out.print(gridMatrix[row][col].getType());
+//            }
+//            System.out.println();
+//        }
+//    }
 
     public static String converEdgesToAction(Collection<Edge> edges) {
         StringBuilder action = new StringBuilder();
@@ -162,13 +165,5 @@ public class Parser {
         }
         return newLines;
     }
-
-    public static void main(String[] args) throws IOException {
-        File file = new File("/Users/anto004/Desktop/AI/cs4660-fall-2016/src/test/resources/homework-2/grid-1.txt");
-        List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
-        Tile[][] matrix = readLinesToMatrix(lines);
-        removeBorders(lines);
-       }
-
 
 }
