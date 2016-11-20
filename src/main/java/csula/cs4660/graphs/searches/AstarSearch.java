@@ -6,18 +6,9 @@ import csula.cs4660.games.models.Tile;
 import csula.cs4660.graphs.Edge;
 import csula.cs4660.graphs.Graph;
 import csula.cs4660.graphs.Node;
-import csula.cs4660.graphs.representations.Representation;
-import csula.cs4660.graphs.utils.Parser;
-
-import java.io.File;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 public class AstarSearch implements SearchStrategy {
-    private static ClassLoader classLoader;
-    private static Graph[] graph1s;
-
     Stopwatch stopwatch = Stopwatch.createStarted();
-
     Node u = new Node(Integer.MAX_VALUE);
     @Override
     public List<Edge> search(Graph graph, Node source, Node dist) {
@@ -104,13 +95,9 @@ public class AstarSearch implements SearchStrategy {
                 }
             }
         }
-        stopwatch.stop();
-        long milis = stopwatch.elapsed(TimeUnit.MILLISECONDS);
-        System.out.println("A star time taken is:" + stopwatch);
-        System.out.println("A star time milis: " + milis);
+        System.out.println("A star time taken is:" + stopwatch.stop());
         return new ArrayList<>();
     }
-
 
     private int heuristicCost(Node node, Node goal) {
         Tile nodeTile = (Tile) node.getData();
@@ -136,33 +123,6 @@ public class AstarSearch implements SearchStrategy {
 
     private boolean isEast(Node src, Node goal) {
         return ((Tile) src.getData()).getX() < ((Tile) goal.getData()).getX();
-    }
-
-    public static void main(){
-        File file1 = new File(classLoader.getResource("homework-2/grid-1.txt").getFile());
-
-        graph1s = buildGraphs(file1);
-    }
-
-    private static Graph[] buildGraphs(File file) {
-        Graph[] graphs = new Graph[3];
-
-        graphs[0] = Parser.readRectangularGridFile(
-                Representation.STRATEGY.ADJACENCY_LIST,
-                file
-        );
-
-        graphs[1] = Parser.readRectangularGridFile(
-                Representation.STRATEGY.ADJACENCY_MATRIX,
-                file
-        );
-
-        graphs[2] = Parser.readRectangularGridFile(
-                Representation.STRATEGY.OBJECT_ORIENTED,
-                file
-        );
-
-        return graphs;
     }
 
 }

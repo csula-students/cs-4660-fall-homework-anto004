@@ -26,25 +26,19 @@ public class Parser {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
         Graph graph = new Graph(Representation.of(graphRepresentation));
-        System.out.println("readRectangularGridFile");
 
         try {
             List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
-            //gridDebug(lines);
 
             List<String> newLines = removeBorders(lines);
             Tile gridMatrix[][] = readLinesToMatrix(newLines);
 
-            //gridMatrixDebug(gridMatrix);
-
             for (Tile[] tileArray : gridMatrix) {
                 for (Tile tile : tileArray) {
                     if (tile != null) {
-                        // System.out.println("TILE PASSED :" + tile.getX()+" "+tile.getY());
                         List<Edge> edges = creatingTileEdges(gridMatrix, tile);
                         graph.addNode(new Node<Tile>(tile));
                         for (Edge edge : edges) {
-                            // System.out.println("edge added to graph: "+edge);
                             graph.addEdge(edge);
                         }
                     }
@@ -55,8 +49,6 @@ public class Parser {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        Node node = new Node<Tile>(new Tile(3, 0, "@1"));
-//        System.out.println("neighbor of Tile 3,0" + graph.neighbors(node));
 
         System.out.println("ReadRectangularGridFile takes time: "+stopwatch.stop());
         return graph;
@@ -97,7 +89,7 @@ public class Parser {
         int rowSize = lines.size();
         int colSize = lines.get(1).length()/2;
         Tile[][] gridMatrix = new Tile[rowSize][colSize];
-       // System.out.println(gridMatrix.length + " " + colSize);
+
         StringBuilder stringType = new StringBuilder();
         for (int row = 0; row < rowSize; row++) {
             // look at two char at a time from the current string
@@ -114,15 +106,16 @@ public class Parser {
         return gridMatrix;
     }
 
+
 //    private static void gridMatrixDebug(Tile[][] gridMatrix) {
 //        System.out.print("  ");
 //
 //        for (int row = 0; row < gridMatrix.length; row++) {
-//           // System.out.print((row) + " ");
+//            System.out.print((row) + " ");
 //            for (int col = 0; col < gridMatrix[0].length; col++) {
-////                if(gridMatrix[row][col] != null)
-////                    System.out.print(gridMatrix[row][col].getType()+ " ");
-//                //System.out.println("col "+col);
+//                if(gridMatrix[row][col] != null)
+//                    System.out.print(gridMatrix[row][col].getType()+ " ");
+//                System.out.println("col "+col);
 //                System.out.print(gridMatrix[row][col].getType());
 //            }
 //            System.out.println();
@@ -165,5 +158,4 @@ public class Parser {
         }
         return newLines;
     }
-
 }

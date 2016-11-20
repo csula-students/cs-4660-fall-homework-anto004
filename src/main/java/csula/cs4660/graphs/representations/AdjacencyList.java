@@ -1,9 +1,6 @@
 package csula.cs4660.graphs.representations;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import csula.cs4660.graphs.Edge;
 import csula.cs4660.graphs.Node;
 
@@ -12,10 +9,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.stream.Stream;
+import java.util.*;
 import java.util.Map.*;
 
-import java.util.*;
 
 
 /**
@@ -25,12 +21,13 @@ import java.util.*;
  * TODO: please implement the method body
  */
 public class AdjacencyList implements Representation {
-    private Map<Node,List<Edge>> adjacencyList = new HashMap<>();
+    private Map<Node,List<Edge>> adjacencyList;
     private Node nodeArray[];
 
     protected AdjacencyList(File file) {
+        adjacencyList = new HashMap<>();
         List<Edge> edges = Lists.newArrayList();
-        HashMap<String, Node> nodeMap = new HashMap();
+        //HashMap<String, Node> nodeMap = new HashMap();
 
         try {
             List<String> lines = Files.readAllLines(file.toPath(), Charset.defaultCharset());
@@ -59,7 +56,7 @@ public class AdjacencyList implements Representation {
     }
 
     protected AdjacencyList() {
-
+        adjacencyList = new HashMap<>();
     }
 
     @Override
@@ -84,6 +81,7 @@ public class AdjacencyList implements Representation {
             //System.out.println("Adjacency List Representation: "+edge);
         }
         return nodes;
+
     }
 
     @Override
