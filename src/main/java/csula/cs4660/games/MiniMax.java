@@ -7,9 +7,8 @@ import csula.cs4660.graphs.Node;
 import java.util.*;
 
 public class MiniMax {
-    private static Integer bestValue;
     private static Integer index;
-
+    private static Integer bestValue;
     public static Node getBestMove(Graph graph, Node root, Integer depth, Boolean max) {
         //root node is not a node part of the graph, it has a different memory reference
         Node node = minimax(graph, root, depth, max);
