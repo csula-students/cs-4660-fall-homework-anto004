@@ -42,21 +42,27 @@ function getNoOfChildren(neighbors){
     return num;
 }
 
-function BFS(X0,Y0){ //for now lets just store values for p1
+function BFS(X0,Y0,X1,Y1){ //for now lets just store values for p1
     //queue
     var queue = [];
-    var source = board[Y0][X0] = {x:X0, y:Y0, value:0};
-
-    queue.push(source);
+    //exploredSet
     var exploredSet = new Set();
-    exploredSet.add(source);
+    var sourceA = board[Y0][X0] = {x:X0, y:Y0, value:0};
+    //var sourceJ = board[Y1][X1] = {x:X1, y:Y1, value:0};
+
+
+    queue.push(sourceA);
+    //queue.push(sourceJ);
+    exploredSet.add(sourceA);
+   // exploredSet.add(sourceJ);
 
     while(queue.length !== 0){
-        var count =0;
-        console.log('level'+ count ++);
         var u = queue.shift();
         var x = u.x;
         var y = u.y;
+        //set parent value to 0
+        //parents Map
+        var parentMap = new Map();
 
         var neighbors = getNeighbors(board, y, x);
         var noOfChild = getNoOfChildren(neighbors);
@@ -66,16 +72,19 @@ function BFS(X0,Y0){ //for now lets just store values for p1
 //                console.log('same type safe to add');
 //            }
             if(neighbors[neighbor] !== null){
-                x = neighbors[neighbor].x;
-                y = neighbors[neighbor].y;
-
-                //x and y as acc to the board initialization set the value
-                board[x][y].value = 1 / noOfChild;
                 if(!exploredSet.has(neighbors[neighbor])){
+                    //(child, parent)
+                    parentMap.set(neighbors[neighbor], u);
                     queue.push(neighbors[neighbor]);
                     exploredSet.add(neighbors[neighbor]);
                 }
             }
+        }
+        // at this level
+        for(var [key,value] of parentMap.entries()){
+//            var parent = parentMap.get(value);
+            //setting child value to 1
+            key.value = 1 / noOfChild;
         }
     }
 }
@@ -89,7 +98,7 @@ function minimax(X1, Y1, depth, max ){
     // }
     printErr('board of y1 and x1 '+board[Y1][X1].x +' '+board[Y1][X1].y)
 }
-BFS(10,10);
+BFS(0,0, 20,20);
 //debugBoard();
 
 function debugBoard(){
