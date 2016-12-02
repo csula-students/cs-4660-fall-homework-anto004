@@ -90,15 +90,48 @@ function BFS(X0,Y0,X1,Y1){ //for now lets just store values for p1
 }
 
 function minimax(X1, Y1, depth, max ){
-    // if(depth == 0)
-    //     return board[Y1][X1];
+    var bestValue;
+    if(depth === 0){
+        return board[Y1][X1].value;
+    }
+     if(max){
+         var neighbors = getNeighbors(board, Y1, X1);
+         for(var neighbor in neighbors){
+             if(neighbors[neighbor] !== null){
+                var X = neighbors[neighbor].x;
+                var Y = neighbors[neighbor].y;
 
-    // if(max){
+                var startingNodeValue = board[Y1][X1].value;
+                var minimaxValue = minimax(X, Y, depth - 1, false);
+                bestValue = Math.max(startingNodeValue, minimaxValue);
+                //return a board for co-ordinates,
+                //reconstruct the board
+                //move in that path
+                console.log('max'+bestValue);
+            }
+         }
+        return bestValue;
+    }
+    else{
+         var neighbors = getNeighbors(board, Y1, X1);
+         for(var neighbor in neighbors){
+             if(neighbors[neighbor] !== null){
+                var X = neighbors[neighbor].x;
+                var Y = neighbors[neighbor].y;
 
-    // }
-    printErr('board of y1 and x1 '+board[Y1][X1].x +' '+board[Y1][X1].y)
+                var startingNodeValue = board[Y1][X1].value;
+                var minimaxValue = minimax(X, Y, depth - 1, true);
+                bestValue = Math.min(startingNodeValue, minimaxValue);
+                console.log('min'+bestValue);
+            }
+         }
+        return bestValue;
+    }
 }
+
+
 BFS(0,0, 20,20);
+minimax(0,0,2,true);
 //debugBoard();
 
 function debugBoard(){
