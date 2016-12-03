@@ -6,7 +6,7 @@ var board = [];
 for (var i = 0; i < 30; i++) { //30cols: represents x axis
     board[i] = new Array(20);
     for (var j = 0; j < 20; j++) //20rows: represents y axis
-        board[i][j] = {x: i, y: j, value: 0};
+        board[i][j] = {x: j, y: i, value: 0};
 }
 
 
@@ -26,23 +26,23 @@ function getCell(board, y, x) {
 
 function getNeighbors(board, y, x) {
     return {
-        up: getCell(board, y - 1, x),
-        right: getCell(board, y, x + 1),
-        down: getCell(board, y + 1, x),
-        left: getCell(board, y, x - 1)
+        UP: getCell(board, y - 1, x),
+        RIGHT: getCell(board, y, x + 1),
+        DOWN: getCell(board, y + 1, x),
+        LEFT: getCell(board, y, x - 1)
     };
 }
 
-function getNoOfChildren(neighbors){
+function getNoOfChildren(parent){
     var num = 0;
-    for(var neighbor in neighbors){
-        if(neighbors[neighbor] !== null)
+    for(var child in parent){
+        if(parent[child] !== null)
             num += 1;
     }
     return num;
 }
 
-function BFS(X0,Y0,X1,Y1){ //for now lets just store values for p1
+function BFS(X0,Y0){ //for now lets just store values for p1
     //queue
     var queue = [];
     //exploredSet
@@ -89,49 +89,63 @@ function BFS(X0,Y0,X1,Y1){ //for now lets just store values for p1
     }
 }
 
-function minimax(X1, Y1, depth, max ){
-    var bestValue;
-    if(depth === 0){
-        return board[Y1][X1].value;
-    }
-     if(max){
-         var neighbors = getNeighbors(board, Y1, X1);
-         for(var neighbor in neighbors){
-             if(neighbors[neighbor] !== null){
-                var X = neighbors[neighbor].x;
-                var Y = neighbors[neighbor].y;
+function minimax(Y1, X1, depth, max ){
+    var bestValue = {};
 
-                var startingNodeValue = board[Y1][X1].value;
-                var minimaxValue = minimax(X, Y, depth - 1, false);
-                bestValue = Math.max(startingNodeValue, minimaxValue);
+    if(depth === 0){
+        return {value: board[Y1][X1].value};
+    }
+
+    var neighbors = getNeighbors(board, Y1, X1);
+    if(max){
+        for(var neighbor in neighbors){
+           // console.log(neighbors[neighbor])
+            if(neighbors[neighbor] !== null){
+               var X = neighbors[neighbor].x;
+               var Y = neighbors[neighbor].y;
+
+               var startingNode = {value: board[Y1][X1].value, dir: neighbor};
+               var minimaxValue = minimax(Y, X, depth - 1, false);
+               if(startingNode.value > minimaxValue.value){
+                   bestValue = startingNode;
+               }
+               else{
+                   minimaxValue.dir = neighbor;
+                   bestValue = minimaxValue;
+               }
                 //return a board for co-ordinates,
                 //reconstruct the board
                 //move in that path
-                console.log('max'+bestValue);
             }
-         }
+        }
+        console.log('max'+bestValue.dir);
         return bestValue;
     }
     else{
-         var neighbors = getNeighbors(board, Y1, X1);
          for(var neighbor in neighbors){
              if(neighbors[neighbor] !== null){
                 var X = neighbors[neighbor].x;
                 var Y = neighbors[neighbor].y;
 
-                var startingNodeValue = board[Y1][X1].value;
-                var minimaxValue = minimax(X, Y, depth - 1, true);
-                bestValue = Math.min(startingNodeValue, minimaxValue);
-                console.log('min'+bestValue);
+                var startingNode = {value: board[Y1][X1].value, dir: neighbor};
+                var minimaxValue = minimax(Y, X, depth - 1, true);
+                 if(startingNode.value > minimaxValue.value){
+                    bestValue = startingNode;
+                }
+                else{
+                    minimaxValue.dir = neighbor;
+                    bestValue = minimaxValue;
+                }
             }
          }
+         console.log('min'+bestValue.dir);
         return bestValue;
     }
 }
 
 
-BFS(0,0, 20,20);
-minimax(0,0,2,true);
+//BFS(10,19);
+//minimax(10,19,2,true);
 //debugBoard();
 
 function debugBoard(){
@@ -165,14 +179,14 @@ function debugBoard(){
 //        var Y1 = parseInt(inputs[3]); // starting Y coordinate of lightcycle (can be the same as Y0 if you play before this player)
 //
 //        //printErr('X0 '+ X0 + 'Y0 '+ Y0);
-//        printErr('X1 '+ X1 + 'Y1 '+ Y1);
-//        debugBoardFunc(X0,Y0,X1,Y1);
+//        //printErr('X1 '+ X1 + 'Y1 '+ Y1);
+//        //debugBoardFunc(X0,Y0,X1,Y1);
 //
-//        // if(i === P)
-//        //     board[Y0][X0] = {x:X0, y:Y0};
-//        //     board[Y1][X1] = {x:X1, y:Y1};
-//        //     minimax(X1, Y1, 1, true);
-//    move(X1,Y1);
+//        if(i === P){
+//            BFS(X0,Y0);
+//            var move = minimax(X0, Y0, "LEFT", 2, true);
+//            print(move.dir);
+//        }
 //    }
 //
 //    // Write an action using print()
