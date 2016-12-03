@@ -118,7 +118,7 @@ function minimax(Y1, X1, depth, max ){
                 //move in that path
             }
         }
-        console.log('max'+bestValue.dir);
+        //console.log('max'+bestValue.dir);
         return bestValue;
     }
     else{
@@ -138,7 +138,7 @@ function minimax(Y1, X1, depth, max ){
                 }
             }
          }
-         console.log('min'+bestValue.dir);
+         //console.log('min'+bestValue.dir);
         return bestValue;
     }
 }
@@ -163,34 +163,34 @@ function debugBoard(){
     }
 }
 
-//// game loop
-//while (true) {
-//    var inputs = readline().split(' ');
-//    var N = parseInt(inputs[0]); // total number of players (2 to 4).
-//    var P = parseInt(inputs[1]); // your player number (0 to 3).
-//    for (var i = 0; i < N; i++) {
-//        var inputs = readline().split(' ');
-//        var X0 = parseInt(inputs[0]); // starting X coordinate of lightcycle (or -1)
-//
-//        var Y0 = parseInt(inputs[1]); // starting Y coordinate of lightcycle (or -1)
-//
-//        var X1 = parseInt(inputs[2]); // starting X coordinate of lightcycle (can be the same as X0 if you play before this player)
-//
-//        var Y1 = parseInt(inputs[3]); // starting Y coordinate of lightcycle (can be the same as Y0 if you play before this player)
-//
-//        //printErr('X0 '+ X0 + 'Y0 '+ Y0);
-//        //printErr('X1 '+ X1 + 'Y1 '+ Y1);
-//        //debugBoardFunc(X0,Y0,X1,Y1);
-//
-//        if(i === P){
-//            BFS(X0,Y0);
-//            var move = minimax(X0, Y0, "LEFT", 2, true);
-//            print(move.dir);
-//        }
-//    }
-//
-//    // Write an action using print()
-//    // To debug: printErr('Debug messages...');
-//
-//}
+// game loop
+while (true) {
+    var inputs = readline().split(' ');
+    var N = parseInt(inputs[0]); // total number of players (2 to 4).
+    var P = parseInt(inputs[1]); // your player number (0 to 3).
+    for (var i = 0; i < N; i++) {
+        var inputs = readline().split(' ');
+        var X0 = parseInt(inputs[0]); // starting X coordinate of lightcycle (or -1)
+
+        var Y0 = parseInt(inputs[1]); // starting Y coordinate of lightcycle (or -1)
+
+        var X1 = parseInt(inputs[2]); // starting X coordinate of lightcycle (can be the same as X0 if you play before this player)
+
+        var Y1 = parseInt(inputs[3]); // starting Y coordinate of lightcycle (can be the same as Y0 if you play before this player)
+
+        //printErr('X0 '+ X0 + 'Y0 '+ Y0);
+        //printErr('X1 '+ X1 + 'Y1 '+ Y1);
+        //debugBoardFunc(X0,Y0,X1,Y1);
+
+        if(i === P){
+            BFS(X1,Y1);
+            var move = minimax(X0, Y0, "LEFT", 2, true);
+            print(move.dir);
+        }
+    }
+
+    // Write an action using print()
+    // To debug: printErr('Debug messages...');
+
+}
 
